@@ -1,0 +1,1876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Micro Medics: Inside Jordan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg1:#E0F2FE; --bg2:#FCE7F3; --bg3:#FEF3C7;
+  --surface:#FFFFFF; --ink:#1E1B4B; --muted:#5B5680; --line:#E4DDF5;
+  --pink:#DB2777; --violet:#7C3AED; --teal:#0F766E; --orange:#C2410C; --sky:#0369A1; --amber:#B45309; --green:#15803D; --rose:#E11D48;
+  --good:#15803D; --good-soft:#DCFCE7; --bad:#DC2626; --bad-soft:#FEE2E2;
+  --m:var(--violet);
+  --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",Verdana,system-ui,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg1:#1B1240; --bg2:#2A1033; --bg3:#0E2438;
+    --surface:#231A45; --ink:#F5F3FF; --muted:#C4BBE8; --line:#3B3170;
+    --pink:#F472B6; --violet:#A78BFA; --teal:#2DD4BF; --orange:#FB923C; --sky:#38BDF8; --amber:#FBBF24; --green:#4ADE80; --rose:#FB7185;
+    --good:#4ADE80; --good-soft:#123826; --bad:#F87171; --bad-soft:#3F1620;
+  }
+}
+:root[data-theme="dark"]{
+  --bg1:#1B1240; --bg2:#2A1033; --bg3:#0E2438;
+  --surface:#231A45; --ink:#F5F3FF; --muted:#C4BBE8; --line:#3B3170;
+  --pink:#F472B6; --violet:#A78BFA; --teal:#2DD4BF; --orange:#FB923C; --sky:#38BDF8; --amber:#FBBF24; --green:#4ADE80; --rose:#FB7185;
+  --good:#4ADE80; --good-soft:#123826; --bad:#F87171; --bad-soft:#3F1620;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;color:var(--ink);font-family:var(--body);font-size:1.0625rem;line-height:1.5;
+  background:linear-gradient(160deg,var(--bg1) 0%,var(--bg2) 55%,var(--bg3) 100%) fixed;}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
+h1,h2,h3{font-family:var(--display);line-height:1.1;margin:0}
+.wrap{max-width:1060px;margin:0 auto;padding:16px;position:relative;z-index:1}
+.hidden{display:none!important}
+/* on-dark text for colored fills: mission tones are dark in light mode, bright in dark mode */
+.fill{color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .fill{color:#1B1240}}
+:root[data-theme="dark"] .fill{color:#1B1240}
+
+/* ---------- floating blood cells ---------- */
+.cells{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.cells span{position:absolute;border-radius:50%;opacity:.28;animation:drift linear infinite}
+.cells span::after{content:"";position:absolute;inset:28%;border-radius:50%;background:rgba(255,255,255,.55)}
+@keyframes drift{from{transform:translateY(110vh) rotate(0)}to{transform:translateY(-20vh) rotate(360deg)}}
+
+/* ---------- vitals bar ---------- */
+.vitals{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(8px);border-bottom:3px solid transparent;border-image:linear-gradient(90deg,var(--violet),var(--pink),var(--orange),var(--amber),var(--green),var(--sky)) 1}
+.vitals .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px}
+.brand{font-family:var(--display);font-weight:800;font-size:1.2rem;background:linear-gradient(90deg,var(--violet),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
+.heart{font-size:1.5rem;display:inline-block;animation:beat 1.1s ease-in-out infinite}
+.fast .heart{animation-duration:.6s}
+@keyframes beat{0%,100%{transform:scale(1)}15%{transform:scale(1.25)}30%{transform:scale(1)}45%{transform:scale(1.15)}}
+.meter{flex:1;min-width:170px}
+.meter-label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--muted)}
+.meter-bar{height:14px;border-radius:7px;background:var(--line);overflow:hidden}
+.meter-fill{height:100%;width:40%;border-radius:7px;background:linear-gradient(90deg,var(--rose),var(--orange),var(--amber),var(--green));background-size:400px 100%;transition:width .6s cubic-bezier(.3,1.4,.5,1)}
+.scores{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:4px 12px;border-radius:999px;background:var(--surface);border:2px solid var(--line);font-size:.9rem;white-space:nowrap;font-weight:700}
+.chip.active{background:var(--pink);border-color:var(--pink)}
+.chip.bump{animation:bump .5s}
+@keyframes bump{40%{transform:scale(1.2)}}
+.icon-btn{background:var(--surface);border:2px solid var(--line);border-radius:10px;padding:4px 10px;font-size:.9rem;color:var(--muted)}
+
+/* ---------- buttons ---------- */
+.primary{background:linear-gradient(135deg,var(--pink),var(--violet));color:#fff;border:none;border-radius:16px;padding:14px 26px;font-family:var(--display);font-weight:800;font-size:1.15rem;box-shadow:0 5px 0 color-mix(in srgb,var(--violet) 60%,#000);transition:transform .1s}
+.primary:hover{transform:translateY(-2px)}
+.primary:active{transform:translateY(3px);box-shadow:0 2px 0 color-mix(in srgb,var(--violet) 60%,#000)}
+.primary:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.secondary{background:var(--surface);color:var(--violet);border:2px solid var(--violet);border-radius:14px;padding:10px 18px;font-weight:700}
+.secondary:disabled{opacity:.5;cursor:not-allowed}
+.link-btn{background:none;border:none;color:var(--violet);text-decoration:underline;padding:4px 0}
+.mbtn{background:var(--m);border:none;border-radius:14px;padding:12px 20px;font-family:var(--display);font-weight:800;font-size:1.05rem;box-shadow:0 4px 0 color-mix(in srgb,var(--m) 55%,#000)}
+.mbtn:active{transform:translateY(3px);box-shadow:0 1px 0 color-mix(in srgb,var(--m) 55%,#000)}
+
+/* ---------- start ---------- */
+.start{display:grid;grid-template-columns:1.15fr .85fr;gap:32px;align-items:center;padding-top:30px}
+.title{font-size:clamp(3rem,9vw,5.6rem);font-weight:800;letter-spacing:-.02em;line-height:.95}
+.title span{display:inline-block;animation:pop-in .6s cubic-bezier(.3,1.6,.5,1) both}
+.title .sp{width:.3em}
+.sub-title{display:block;font-family:var(--display);font-size:clamp(1.4rem,3.5vw,2rem);color:var(--pink);margin-top:10px;font-weight:800}
+@keyframes pop-in{from{opacity:0;transform:translateY(40px) scale(.4) rotate(-10deg)}}
+.story{max-width:58ch;margin:16px 0;font-size:1.1rem}
+.chart{background:var(--surface);border-radius:22px;padding:22px;box-shadow:0 12px 30px color-mix(in srgb,var(--violet) 18%,transparent);border:3px solid var(--line);position:relative;transform:rotate(1.5deg)}
+.chart::before{content:"";position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:96px;height:24px;border-radius:9px;background:linear-gradient(90deg,var(--sky),var(--violet))}
+.chart dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:10px 0 0}
+.chart dt{color:var(--muted)}
+.chart dd{margin:0;font-weight:700}
+.mode-pick{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 10px}
+.seg{border:2px solid var(--violet);background:var(--surface);color:var(--violet);border-radius:12px;padding:10px 18px;font-weight:700}
+.seg[aria-pressed="true"]{background:var(--violet);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .seg[aria-pressed="true"]{color:#1B1240}}
+.team-setup{display:grid;gap:8px;margin:10px 0}
+.team-setup label{display:flex;gap:10px;align-items:center;font-weight:700}
+.team-setup input{flex:1;padding:8px 12px;border-radius:10px;border:2px solid var(--line);background:var(--surface);color:var(--ink);font:inherit}
+
+/* ---------- body map ---------- */
+.map{display:grid;grid-template-columns:minmax(260px,370px) 1fr;gap:28px;padding-top:22px;align-items:start}
+.body-stage{position:relative;width:100%;aspect-ratio:300/520}
+.body-stage svg{width:100%;height:100%;display:block}
+.silhouette path,.silhouette circle,.silhouette rect{fill:color-mix(in srgb,var(--pink) 16%,var(--surface));stroke:var(--violet);stroke-width:3}
+.hot{position:absolute;transform:translate(-50%,-50%);width:48px;height:48px;border-radius:50%;border:3px solid var(--surface);background:var(--m);font-family:var(--display);font-weight:800;font-size:1.2rem;display:grid;place-items:center;padding:0;box-shadow:0 0 0 0 color-mix(in srgb,var(--m) 50%,transparent);animation:ring 2.2s ease-out infinite}
+.hot:hover{transform:translate(-50%,-50%) scale(1.15)}
+.hot.done::after{content:"✓";position:absolute;right:-6px;top:-6px;width:20px;height:20px;border-radius:50%;background:var(--good);color:#fff;font-size:.75rem;display:grid;place-items:center}
+@keyframes ring{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--m) 55%,transparent)}70%,100%{box-shadow:0 0 0 16px transparent}}
+.map h2{font-size:clamp(1.7rem,4vw,2.3rem)}
+.mission-list{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:10px}
+.mcard{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;background:var(--surface);border-radius:16px;padding:12px 14px;border-left:8px solid var(--m);box-shadow:0 4px 14px color-mix(in srgb,var(--m) 14%,transparent)}
+.num{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--m);font-family:var(--display);font-weight:800;font-size:1.2rem}
+.m-title{font-weight:700;display:block;font-size:1.05rem}
+.m-sub{color:var(--muted);font-size:.9rem}
+.m-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.small{border-radius:10px;padding:6px 12px;font-weight:700;font-size:.9rem;border:2px solid var(--m);background:var(--surface);color:var(--m)}
+.small.solid{background:var(--m);border-color:var(--m)}
+.stars{color:var(--amber);font-size:1.05rem;letter-spacing:1px;white-space:nowrap}
+.std-tag{font-size:.8rem;font-weight:700;color:var(--m);background:color-mix(in srgb,var(--m) 14%,var(--surface));border-radius:6px;padding:2px 8px;white-space:nowrap}
+.map-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;align-items:center}
+
+/* ---------- panels shared ---------- */
+.panel{max-width:820px;margin:22px auto 0;background:var(--surface);border-radius:24px;overflow:hidden;box-shadow:0 14px 34px color-mix(in srgb,var(--m) 20%,transparent);animation:card-in .45s cubic-bezier(.3,1.4,.5,1)}
+@keyframes card-in{from{opacity:0;transform:translateY(24px) scale(.97)}}
+.banner{background:linear-gradient(135deg,var(--m),color-mix(in srgb,var(--m) 60%,var(--pink)));padding:18px 24px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.banner h2{font-size:1.5rem}
+.banner .tag{background:rgba(255,255,255,.25);border-radius:8px;padding:3px 10px;font-weight:700;font-size:.85rem}
+.pbody{padding:22px 24px}
+
+/* ---------- study briefing ---------- */
+.idea{font-size:1.2rem;font-family:var(--display);font-weight:600;line-height:1.35;border-left:6px solid var(--m);padding:4px 0 4px 14px;margin:0 0 20px}
+.study h3{font-size:1.2rem;margin:22px 0 10px;color:var(--m)}
+.flip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.flip{display:block;width:100%;perspective:800px;background:none;border:none;padding:0;min-height:172px;text-align:left}
+.flip .inner{display:block;position:relative;width:100%;height:100%;min-height:172px;transition:transform .55s cubic-bezier(.3,1.3,.5,1);transform-style:preserve-3d}
+.flip[aria-pressed="true"] .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;border-radius:16px;padding:14px;backface-visibility:hidden;display:flex;flex-direction:column;justify-content:center}
+.front{background:var(--m);align-items:center;text-align:center;font-family:var(--display);font-weight:800;font-size:1.15rem}
+.front small{font-family:var(--body);font-weight:400;font-size:.78rem;opacity:.85;margin-top:6px}
+.back{background:color-mix(in srgb,var(--m) 12%,var(--surface));border:2px solid var(--m);transform:rotateY(180deg);font-size:.93rem;line-height:1.35}
+.back b{color:var(--m);display:block;margin-bottom:4px}
+.chain{list-style:none;padding:0;margin:0;display:grid;gap:0}
+.chain li{position:relative;display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--m) 9%,var(--surface));margin-bottom:22px;animation:step-in .45s both}
+.chain li:not(:last-child)::after{content:"▼";position:absolute;left:24px;bottom:-21px;color:var(--m);font-size:.9rem}
+.chain .n{flex:none;width:30px;height:30px;border-radius:50%;background:var(--m);display:grid;place-items:center;font-weight:800}
+@keyframes step-in{from{opacity:0;transform:translateX(-20px)}}
+.ladder{display:grid;gap:8px}
+.rung{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--m);animation:step-in .45s both}
+.rung .lvl{font-family:var(--display);font-weight:800;font-size:1.1rem;min-width:118px}
+.rung .ex{font-weight:700;background:rgba(255,255,255,.22);padding:3px 10px;border-radius:8px;white-space:nowrap}
+.ctable{width:100%;border-collapse:collapse;font-size:.95rem}
+.ctable th,.ctable td{padding:8px 10px;text-align:left;border-bottom:2px solid var(--line)}
+.ctable th{color:var(--m)}
+.yes{color:var(--good);font-weight:800}.no{color:var(--bad);font-weight:800}
+.fact{display:flex;gap:14px;align-items:flex-start;background:linear-gradient(135deg,color-mix(in srgb,var(--amber) 22%,var(--surface)),color-mix(in srgb,var(--pink) 14%,var(--surface)));border-radius:18px;padding:16px 18px;margin-top:22px}
+.fact .bulb{font-size:2rem;animation:wiggle 2.5s ease-in-out infinite}
+@keyframes wiggle{0%,100%{transform:rotate(0)}10%{transform:rotate(-12deg)}20%{transform:rotate(10deg)}30%{transform:rotate(0)}}
+.fact b{display:block;font-family:var(--display)}
+.sys-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.sys{border-radius:14px;padding:12px 14px;background:color-mix(in srgb,var(--c) 12%,var(--surface));border-top:6px solid var(--c)}
+.sys b{font-family:var(--display);font-size:1.05rem;color:var(--c)}
+.sys p{margin:4px 0 0;font-size:.93rem}
+.cer{display:grid;gap:8px}
+.cer div{border-radius:12px;padding:10px 14px;background:color-mix(in srgb,var(--m) 9%,var(--surface))}
+.cer b{color:var(--m)}
+.srcline{font-size:.85rem;color:var(--muted);margin-top:14px}
+.srcline a{color:var(--violet)}
+.q-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;align-items:center}
+.study-tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:18px}
+.study-tabs button{border:none;border-radius:999px;padding:8px 14px;font-weight:700;background:var(--m)}
+.study-tabs button[aria-current="true"]{outline:3px solid var(--ink);outline-offset:2px}
+
+/* ---------- question ---------- */
+.progress{display:flex;gap:6px;margin-bottom:14px}
+.progress span{flex:1;max-width:44px;height:10px;border-radius:5px;background:var(--line);transition:background .3s}
+.progress span.ok{background:var(--good)}
+.progress span.no{background:var(--bad)}
+.progress span.now{background:var(--m);animation:blink 1.2s ease-in-out infinite}
+@keyframes blink{50%{opacity:.45}}
+.turn{display:inline-block;font-weight:800;background:var(--pink);border-radius:999px;padding:4px 14px;margin-bottom:10px;animation:pop-in .5s cubic-bezier(.3,1.6,.5,1)}
+.qtext{font-size:1.35rem;font-family:var(--display);font-weight:600;line-height:1.3;margin:0 0 18px}
+.options{display:grid;gap:10px}
+.opt{text-align:left;background:var(--surface);border:3px solid var(--line);border-radius:16px;padding:12px 16px;display:flex;gap:12px;align-items:flex-start;transition:transform .12s,border-color .12s}
+.opt:hover:not(:disabled){border-color:var(--m);transform:translateX(4px)}
+.opt .key{flex:none;width:30px;height:30px;border-radius:9px;background:var(--m);display:grid;place-items:center;font-weight:800;font-size:.9rem}
+.opt[aria-pressed="true"]{border-color:var(--m);background:color-mix(in srgb,var(--m) 12%,var(--surface))}
+.opt.correct{border-color:var(--good);background:var(--good-soft);animation:glow .8s}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.struck{opacity:.35;text-decoration:line-through}
+.opt:disabled{cursor:default}
+@keyframes glow{40%{transform:scale(1.03);box-shadow:0 0 0 8px color-mix(in srgb,var(--good) 30%,transparent)}}
+.shake{animation:shake .45s}
+@keyframes shake{20%{transform:translateX(-10px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
+.order-slots{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:8px;counter-reset:s}
+.order-slots li{counter-increment:s;display:flex;gap:10px;align-items:center;min-height:50px;border:3px dashed var(--line);border-radius:14px;padding:6px 10px}
+.order-slots li::before{content:counter(s);flex:none;width:30px;height:30px;border-radius:50%;background:var(--m);color:var(--surface);display:grid;place-items:center;font-weight:800}
+.order-slots li button{flex:1;text-align:left;background:color-mix(in srgb,var(--m) 14%,var(--surface));border:none;border-radius:10px;padding:8px 10px;animation:pop-in .35s cubic-bezier(.3,1.6,.5,1)}
+.order-slots li.correct{border-style:solid;border-color:var(--good)}
+.order-slots li.wrong{border-style:solid;border-color:var(--bad)}
+.pool-label{color:var(--muted);font-size:.92rem;margin:0 0 8px}
+.feedback{margin-top:18px;border-radius:18px;padding:16px 18px;border-left:8px solid;animation:card-in .4s cubic-bezier(.3,1.4,.5,1)}
+.feedback.good{background:var(--good-soft);border-color:var(--good)}
+.feedback.bad{background:var(--bad-soft);border-color:var(--bad)}
+.feedback h3{font-size:1.3rem;margin-bottom:6px}
+.feedback p{margin:6px 0 0}
+.correct-order{margin:8px 0 0;padding-left:1.4em}
+.pts{display:inline-block;font-family:var(--display);font-weight:800;color:var(--good);animation:float-up 1s ease-out both}
+@keyframes float-up{from{opacity:0;transform:translateY(12px) scale(.6)}}
+
+/* ---------- result / report ---------- */
+.result{max-width:760px;margin:26px auto 0;text-align:center;position:relative}
+.result h2{font-size:clamp(2.2rem,6vw,3.4rem);font-weight:800;background:linear-gradient(90deg,var(--violet),var(--pink),var(--orange));-webkit-background-clip:text;background-clip:text;color:transparent}
+.big-stars{font-size:3.2rem;margin:10px 0;display:flex;gap:10px;justify-content:center}
+.big-stars span{display:inline-block;color:var(--line);animation:star-pop .6s cubic-bezier(.3,1.8,.5,1) both}
+.big-stars span.on{color:var(--amber);text-shadow:0 0 18px color-mix(in srgb,var(--amber) 60%,transparent)}
+@keyframes star-pop{from{opacity:0;transform:scale(0) rotate(-120deg)}}
+.report{max-width:760px;margin:20px auto 0;display:grid;gap:12px;text-align:left}
+.row{background:var(--surface);border-radius:16px;padding:14px 16px;border-left:8px solid var(--m)}
+.row-top{display:flex;justify-content:space-between;gap:10px;font-weight:700}
+.bar{height:12px;border-radius:6px;background:var(--line);overflow:hidden;margin-top:8px}
+.bar div{height:100%;background:var(--m);border-radius:6px;animation:grow 1s cubic-bezier(.3,1.2,.5,1) both}
+@keyframes grow{from{width:0!important}}
+.row p{margin:6px 0 0;color:var(--muted);font-size:.95rem}
+.podium{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:14px 0}
+.podium .chip{font-size:1rem;padding:8px 14px}
+
+/* ---------- confetti ---------- */
+.fx{position:fixed;inset:0;pointer-events:none;z-index:50;overflow:hidden}
+.fx i{position:absolute;width:10px;height:14px;border-radius:3px}
+
+/* ---------- modal ---------- */
+dialog{max-width:680px;width:calc(100% - 32px);border:none;border-radius:20px;padding:24px;background:var(--surface);color:var(--ink)}
+dialog::backdrop{background:rgba(27,18,64,.6)}
+dialog h2{color:var(--violet);margin-bottom:10px}
+dialog h3{font-size:1.05rem;margin:16px 0 4px}
+dialog ul{padding-left:1.2em;margin:4px 0}
+dialog li{margin:4px 0}
+.src a{color:var(--violet)}
+
+.fill.fill{color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .fill.fill{color:#1B1240}}
+:root[data-theme="dark"] .fill.fill{color:#1B1240}
+.title .word{white-space:nowrap;display:inline-block}
+html{background:linear-gradient(160deg,var(--bg1) 0%,var(--bg2) 55%,var(--bg3) 100%);min-height:100%}
+body{background:transparent}
+.syschips{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 8px}
+.syschip{font-size:.72rem;font-weight:700;border-radius:999px;padding:2px 8px}
+.pick-title{text-align:center;font-size:clamp(2rem,5vw,2.8rem);margin-top:24px;background:linear-gradient(90deg,var(--violet),var(--pink),var(--orange));-webkit-background-clip:text;background-clip:text;color:transparent}
+.case-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:22px}
+.case{display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--surface);border:none;border-top:10px solid var(--c);border-radius:22px;padding:18px;box-shadow:0 10px 26px color-mix(in srgb,var(--c) 22%,transparent);animation:card-in .5s cubic-bezier(.3,1.4,.5,1) both;transition:transform .15s}
+.case:hover{transform:translateY(-6px) rotate(-1deg)}
+.case-emoji{font-size:2.6rem;line-height:1}
+.case-name{font-family:var(--display);font-weight:800;font-size:1.25rem;color:var(--c)}
+.case-blurb{font-size:.95rem}
+.case-meta{font-size:.85rem;color:var(--muted);font-weight:700}
+.patient-tag{display:inline-flex;gap:8px;align-items:center;font-family:var(--display);font-weight:800;font-size:1.1rem;background:var(--surface);border:3px solid var(--c);color:var(--c);border-radius:999px;padding:6px 16px;margin-bottom:8px}
+.bridge{background:color-mix(in srgb,var(--m) 10%,var(--surface));border-radius:12px;padding:10px 14px;margin:0 0 16px}
+.rep-h{font-size:1.3rem;margin:12px 0 0;color:var(--violet)}
+.cov td,.cov th{text-align:center}.cov td:first-child,.cov th:first-child{text-align:left}
+.learn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.learn{display:flex;flex-direction:column;gap:4px;text-decoration:none;color:var(--ink);background:var(--surface);border:3px solid var(--m);border-radius:16px;padding:14px;transition:transform .15s,box-shadow .15s}
+.learn:hover{transform:translateY(-4px);box-shadow:0 8px 18px color-mix(in srgb,var(--m) 25%,transparent)}
+.learn b{font-family:var(--display);font-size:1.05rem;color:var(--m)}
+.learn .site{font-size:.82rem;font-weight:700;color:var(--muted)}
+.learn span:last-child{font-size:.92rem}
+.lvl-tag{align-self:flex-start;font-size:.72rem;font-weight:800;background:color-mix(in srgb,var(--m) 16%,var(--surface));color:var(--m);border-radius:999px;padding:2px 9px}
+.learn a{text-decoration:none}
+.learn a b{font-family:var(--display);font-size:1.05rem;color:var(--m)}
+.learn a.es{font-size:.85rem;font-weight:700;color:var(--violet);margin-top:4px}
+.resume{background:var(--surface);border:3px solid var(--green);border-radius:18px;padding:14px 16px;margin:16px 0}
+.progress span.re{background:var(--amber)}
+.feedback.close{background:color-mix(in srgb,var(--amber) 16%,var(--surface));border-color:var(--amber)}
+.feedback.reveal{background:color-mix(in srgb,var(--sky) 12%,var(--surface));border-color:var(--sky)}
+.reading{background:var(--surface);border-radius:14px;padding:12px 14px;margin-top:12px;border:2px dashed var(--line)}
+.reading h4{margin:0 0 6px;font-family:var(--display);font-size:1.1rem;color:var(--m)}
+.reading dl{margin:0;display:grid;gap:6px}
+.reading dt{font-weight:800;color:var(--m)}
+.reading dd{margin:0 0 4px}
+.rd-intro{margin:0 0 8px}
+.rd-chain{margin:6px 0 0;padding-left:1.3em}
+.rd-links{margin:10px 0 0;font-size:.95rem}
+.rd-links a{color:var(--violet)}
+.burst{position:fixed;left:50%;top:40%;font-size:7rem;transform:translate(-50%,-50%);z-index:60;pointer-events:none;animation:burst-pop 1.4s cubic-bezier(.3,1.6,.5,1) forwards;filter:drop-shadow(0 8px 20px rgba(0,0,0,.2))}
+.burst.close{animation:burst-wobble 1.4s ease-in-out forwards}
+.burst.wrong{font-size:5rem;animation:burst-soft 1.4s ease-out forwards}
+@keyframes burst-pop{0%{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(-30deg)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.25) rotate(8deg)}45%{transform:translate(-50%,-50%) scale(1) rotate(0)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-90%) scale(.9)}}
+@keyframes burst-wobble{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.1) rotate(-12deg)}35%{transform:translate(-50%,-50%) rotate(12deg)}50%{transform:translate(-50%,-50%) rotate(-8deg)}65%{transform:translate(-50%,-50%) rotate(0)}85%{opacity:1}100%{opacity:0}}
+@keyframes burst-soft{0%{opacity:0;transform:translate(-50%,-40%) scale(.6)}30%{opacity:1;transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-60%)}}
+.wobble{animation:wobble .6s}
+@keyframes wobble{25%{transform:rotate(-1.2deg)}50%{transform:rotate(1.2deg)}75%{transform:rotate(-.6deg)}}
+.brief-dlg{max-width:860px;padding:0;overflow:auto;max-height:90vh}
+.brief-dlg .banner{border-radius:0}
+.teacher{background:var(--surface);border-radius:20px;padding:22px;margin-top:20px}
+.teacher h2{color:var(--violet);font-size:1.8rem;margin:8px 0}
+.teacher h3{margin:22px 0 8px;color:var(--violet)}
+.teacher h4{margin:16px 0 6px}
+.ak-brief,.ak-type{font-size:.8rem;color:var(--muted);font-weight:400}
+.ak td{vertical-align:top;font-size:.9rem;text-align:left}
+.ak-ol{margin:0;padding-left:1.2em}
+.ak-src{font-size:.78rem;color:var(--muted)}
+@media print{
+  .vitals,.cells,.fx,.no-print,dialog{display:none!important}
+  html,body{background:#fff!important;color:#000}
+  .teacher{box-shadow:none;padding:0;margin:0}
+  .ak tr{break-inside:avoid}
+  .ak-case{break-before:page}
+  a{color:#000}
+}
+.team-setup input.need{border-color:var(--pink);box-shadow:0 0 0 3px color-mix(in srgb,var(--pink) 30%,transparent);animation:shake .45s}
+.lightning-card{display:flex;gap:16px;align-items:center;width:100%;max-width:760px;margin:22px auto 0;text-align:left;border:none;border-radius:22px;padding:16px 20px;background:linear-gradient(135deg,var(--amber),var(--orange));color:#fff;box-shadow:0 10px 26px color-mix(in srgb,var(--amber) 35%,transparent);transition:transform .15s}
+.lightning-card:hover{transform:translateY(-4px)}
+.lightning-card .bolt{font-size:2.6rem;animation:wiggle 2s ease-in-out infinite}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .lightning-card{color:#1B1240}}
+.lr-rules{margin:0 0 12px;padding-left:1.2em}
+.lr-track{height:12px;background:var(--line)}
+.lr-track div{height:100%;width:100%;background:linear-gradient(90deg,var(--green),var(--amber));transition:width .25s linear}
+.lr-track div.hurry{background:var(--rose);animation:blink .5s ease-in-out infinite}
+.lr-clock{font-size:1.1rem!important}
+.lr-from{margin:0 0 6px;color:var(--muted);font-size:.9rem}
+.lr-good{font-family:var(--display);font-weight:800;color:var(--good);font-size:1.2rem;animation:pop-in .4s}
+.lr-bad{font-weight:700;color:var(--bad)}
+.resbox{background:var(--surface);border:3px solid var(--green);border-radius:16px;padding:14px 16px;margin-bottom:6px}
+.resbox textarea{width:100%;font-family:ui-monospace,Consolas,monospace;font-size:.85rem;border-radius:10px;border:2px solid var(--line);padding:10px;background:var(--bg1);color:var(--ink)}
+.vterm{width:28%;white-space:normal}
+.pw{display:flex;flex-direction:column;gap:4px;font-weight:700;margin:10px 0}
+.pw input{padding:10px 12px;border-radius:10px;border:2px solid var(--line);background:var(--surface);color:var(--ink);font:inherit}
+.pw-msg{color:var(--bad);font-weight:700;min-height:1.4em;margin:4px 0}
+.pw-change{margin-top:20px;background:color-mix(in srgb,var(--violet) 7%,var(--surface));border-radius:14px;padding:12px 16px}
+.pw-change summary{cursor:pointer;font-weight:800;color:var(--violet)}
+.pw-line{display:inline-block;margin:6px 0;padding:6px 8px;background:var(--bg1);border-radius:8px;word-break:break-all}
+@media (max-width:760px){
+  .start,.map{grid-template-columns:1fr}
+  .chart{transform:none}
+  .body-stage{max-width:290px;margin:0 auto}
+  .pbody{padding:18px}
+  .mcard{grid-template-columns:40px 1fr}
+  .m-actions{grid-column:1/-1;justify-content:flex-start}
+  .rung{grid-template-columns:1fr}
+  .rung .ex{justify-self:start}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .cells{display:none}
+}
+</style>
+</head>
+<body>
+<div class="cells" id="cells" aria-hidden="true"></div>
+<div class="fx" id="fx" aria-hidden="true"></div>
+
+<header class="vitals hidden" id="vitals">
+  <div class="wrap">
+    <span class="brand">Micro Medics</span>
+    <span class="heart" aria-hidden="true">❤️</span>
+    <div class="meter" aria-live="polite">
+      <div class="meter-label"><span id="meterWho">Patient condition</span><span id="condText">Wiped out</span></div>
+      <div class="meter-bar" role="progressbar" aria-label="Jordan's condition" aria-valuemin="0" aria-valuemax="100" id="meterBar"><div class="meter-fill" id="meterFill"></div></div>
+    </div>
+    <div class="scores" id="scoreChips"></div>
+    <button class="icon-btn" id="stdBtn" type="button">Standards</button>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+<dialog id="briefDlg" class="brief-dlg" aria-label="Study briefing"><div class="bd-body"></div><div class="q-actions" style="padding:0 20px 20px"><button class="primary" type="button" id="closeBrief">Back to my question</button></div></dialog>
+
+<dialog id="stdDialog" aria-labelledby="stdTitle">
+  <h2 id="stdTitle">What this game covers</h2>
+  <h3>Georgia Standards of Excellence, Grade 7 (GaDOE, official wording)</h3>
+  <p><strong>S7L2.</strong> Obtain, evaluate, and communicate information to describe how cell structures, cells, tissues, organs, and organ systems interact to maintain the basic needs of organisms.</p>
+  <ul>
+    <li><strong>S7L2.a</strong> Develop a model and construct an explanation of how cell structures (specifically the nucleus, cytoplasm, cell membrane, cell wall, chloroplasts, lysosome, and mitochondria) contribute to the function of the cell as a system in obtaining nutrients in order to grow, reproduce, make needed materials, and process waste. <em>(Clarification statement: The intent is for students to demonstrate how the component structures of the cell interact and work together to allow the cell as a whole to carry out various processes. Additional structures, beyond those listed, will be addressed in high school Biology.)</em></li>
+    <li><strong>S7L2.b</strong> Develop and use a conceptual model of how cells are organized into tissues, tissues into organs, organs into systems, and systems into organisms.</li>
+    <li><strong>S7L2.c</strong> Construct an argument that systems of the body (Cardiovascular, Excretory, Digestive, Respiratory, Muscular, Nervous, and Immune) interact with one another to carry out life processes. <em>(Clarification statement: The emphasis is not on learning individual structures and functions associated with each system, but on how systems interact to support life processes.)</em></li>
+  </ul>
+  <h3>Gwinnett County AKS, 7th Grade Science (content)</h3>
+  <ul>
+    <li>Obtain, evaluate, and communicate information to construct scientific explanations to describe how cell structures interact to maintain the basic needs of organisms.</li>
+    <li>Obtain, evaluate, and communicate information to construct scientific explanations to describe how cells, tissues, organs, and organ systems interact to maintain the basic needs of organisms.</li>
+  </ul>
+  <h3>Coverage: what each patient case practices</h3>
+  <div id="coverage"></div>
+  <h3>Standards sources</h3>
+  <ul class="src">
+    <li><a href="https://inspire.gadoe.org/course/26.0110/0" target="_blank" rel="noopener">GaDOE Inspire, Science 7th Grade course page (official)</a></li>
+    <li><a href="https://media.cobbk12.org/media/WWWCobb/medialib/science-seventh-grade-georgia-standards.0fc01c106790.pdf" target="_blank" rel="noopener">GaDOE, Science GSE Seventh Grade Standards document (March 31, 2016; GaDOE-authored PDF, hosted by Cobb County Schools)</a></li>
+    <li><a href="https://inspire.gadoe.org/user-files/9391da0f-5dd6-4e64-8075-9bab16f9cf44.pdf" target="_blank" rel="noopener">GaDOE, GSE Science FAQ and Clarifications (March 2021)</a></li>
+    <li><a href="https://www.gcpsk12.org/families/academic-knowledge-and-skills-aks/course-catalog-25-26/course-catalog-page/~board/2025-26-aks-ms/post/7th-grade-science-7" target="_blank" rel="noopener">Gwinnett County Public Schools, 7th Grade Science AKS (2025–26)</a></li>
+  </ul>
+  <h3>Learn-more links for students</h3>
+  <p style="margin:4px 0">Each briefing ends with student-level reading from Nemours KidsHealth (medically reviewed), MedlinePlus (NIH), NIDDK (NIH), and the National Cancer Institute (NIH). Each page was opened and checked in September 2026.</p>
+  <h3>Science content verified against</h3>
+  <p style="margin:4px 0">OpenStax <em>Biology 2e</em> and <em>Anatomy &amp; Physiology 2e</em> (free, peer-reviewed textbooks from Rice University), read on openstax.org itself, plus NIH/NIDDK. Each answer explanation lists the specific section it was checked against.</p>
+  <p style="color:var(--muted);font-size:.92rem">Standards and AKS last checked September 2026. Per GaDOE, the skeletal system is not assessed under S7L2.c, so only the seven named systems are used as answers.</p>
+  <div class="q-actions"><button class="primary" id="closeStd" type="button">Back to the game</button></div>
+</dialog>
+
+<script>
+const MISSIONS = [
+ { id:"cell", title:"Cell Lab", sub:"Zoom in on Jordan's cells", std:"a", x:13, y:56,
+   qs:[
+   {t:"mc", q:"Jordan's leg muscle cells need energy to sprint. Which cell structure releases the energy stored in glucose (sugar)?",
+    o:["Mitochondria","Nucleus","Lysosome","Cell wall"], a:0,
+    e:"Mitochondria use oxygen to release the energy stored in glucose. This process is called cellular respiration, and it gives the cell usable energy."},
+   {t:"mc", q:"One cell structure works like a security gate, controlling what enters and leaves the cell. Which is it?",
+    o:["Cell membrane","Cytoplasm","Chloroplast","Nucleus"], a:0,
+    e:"The cell membrane lets nutrients and water in and lets wastes out, while keeping other materials from passing freely."},
+   {t:"multi", n:2, q:"Jordan is a human. Pick TWO structures you would NOT find in Jordan's cells.",
+    o:["Cell wall","Chloroplast","Mitochondria","Nucleus"], a:[0,1],
+    e:"Cell walls and chloroplasts are found in plant cells. Animal cells like Jordan's have only a flexible cell membrane (no cell wall), and they get food by eating instead of making it through photosynthesis."},
+   {t:"mc", q:"Worn-out cell parts and wastes are piling up inside a cell. Which structure uses enzymes to break them down?",
+    o:["Lysosome","Chloroplast","Cell membrane","Nucleus"], a:0,
+    e:"Lysosomes hold digestive enzymes. They break down wastes and worn-out parts so the cell can get rid of them or reuse the materials."},
+   {t:"mc", q:"Which structure holds DNA, the instructions that direct the cell's activities?",
+    o:["Nucleus","Cytoplasm","Lysosome","Mitochondria"], a:0,
+    e:"The nucleus contains the cell's DNA. It acts as the control center, directing activities like growth and making needed materials."},
+   {t:"mc", q:"Where are the organelles held, in a jelly-like fluid where many of the cell's chemical reactions happen?",
+    o:["Cytoplasm","Nucleus","Cell wall","Lysosome"], a:0,
+    e:"Cytoplasm fills the cell and surrounds the organelles. Many chemical reactions the cell needs take place there."},
+   {t:"mc", q:"Scientists observe that muscle cells have many more mitochondria than most other cells. Which explanation BEST fits this evidence?",
+    o:["Muscle cells use a lot of energy to contract, so they need more energy-releasing structures","Muscle cells need to store extra DNA","Muscle cells make their own food by photosynthesis","Muscle cells need extra support from a cell wall"], a:0,
+    e:"Structure matches function. Muscles use lots of energy to contract, so muscle cells are packed with mitochondria to release that energy."}
+ ]},
+ { id:"org", title:"Build-a-Body", sub:"Cells → tissues → organs → systems", std:"b", x:69, y:84,
+   qs:[
+   {t:"order", q:"Put the levels of organization in order, from smallest to largest.",
+    o:["Cell","Tissue","Organ","Organ system","Organism"],
+    e:"Cells group into tissues, tissues form organs, organs work together in organ systems, and systems work together to make a whole organism like Jordan."},
+   {t:"mc", q:"A group of similar cells working together to do one job is called a…",
+    o:["Tissue","Organ","Organ system","Organism"], a:0,
+    e:"Similar cells doing the same job form a tissue. For example, many muscle cells together form muscle tissue."},
+   {t:"mc", q:"Jordan's heart is made of muscle tissue, connective tissue, and epithelial tissue all working together. That makes the heart a(n)…",
+    o:["Organ","Tissue","Cell","Organ system"], a:0,
+    e:"An organ is made of different types of tissues working together to do a job. The heart's job is pumping blood."},
+   {t:"mc", q:"The mouth, esophagus, stomach, and intestines work together to break down food. This group is an example of a(n)…",
+    o:["Organ system","Tissue","Cell","Organism"], a:0,
+    e:"Several organs working together make an organ system. These organs make up the digestive system."},
+   {t:"mc", q:"Which list is in order from SMALLEST to LARGEST?",
+    o:["Muscle cell → cardiac muscle tissue → heart → cardiovascular system","Heart → muscle cell → cardiovascular system → muscle tissue","Muscle tissue → muscle cell → heart → cardiovascular system","Cardiovascular system → heart → muscle tissue → muscle cell"], a:0,
+    e:"Cell, then tissue, then organ, then organ system. The same pattern works for every body system."},
+   {t:"mc", q:"Why can damage to one small group of cells end up affecting the whole organism?",
+    o:["Cells make up tissues, tissues make up organs, and organs work in systems that keep the organism alive","Every cell is its own separate organism","Organs are smaller than cells","Tissues are not connected to organs"], a:0,
+    e:"The levels are built on each other. If cells can't do their job, the tissue, organ, and system that depend on them can't either."}
+ ]},
+ { id:"fuel", title:"Fuel Line", sub:"Digestive + cardiovascular", std:"c", x:57, y:43,
+   qs:[
+   {t:"mc", q:"What is the main job of the digestive system?",
+    o:["Break food down into nutrients the body can absorb","Pump blood through the body","Filter wastes out of the blood","Carry signals to the brain"], a:0,
+    e:"The digestive system breaks food into small nutrient molecules, like glucose, that can pass into the blood."},
+   {t:"mc", q:"Where are MOST nutrients absorbed into Jordan's blood?",
+    o:["Small intestine","Stomach","Large intestine","Esophagus"], a:0,
+    e:"The small intestine is lined with tiny finger-like villi filled with capillaries. Nutrients pass through them into the blood. The large intestine's main job is reabsorbing water from what's left."},
+   {t:"mc", q:"After nutrients are absorbed, which system carries them to cells all over Jordan's body?",
+    o:["Cardiovascular","Excretory","Nervous","Respiratory"], a:0,
+    e:"Blood, pumped by the heart through blood vessels, delivers nutrients to every cell. This is one way the digestive and cardiovascular systems interact."},
+   {t:"mc", q:"Food is pushed through the esophagus and intestines by waves of muscle contractions. Which two systems are working together?",
+    o:["Digestive and muscular","Digestive and excretory","Nervous and immune","Respiratory and excretory"], a:0,
+    e:"Smooth muscle in the walls of the digestive tract squeezes in waves (called peristalsis) to move food along."},
+   {t:"mc", q:"Which statement about blood vessels is correct?",
+    o:["Arteries carry blood away from the heart; veins carry blood back to the heart","Veins carry blood away from the heart; arteries carry blood back","Arteries carry only nutrients, and veins carry only oxygen","Veins are found only in the lungs"], a:0,
+    e:"Arteries move blood away from the heart, veins return it, and tiny capillaries connect them where materials are exchanged with cells."},
+   {t:"mc", q:"Strong stomach acid kills many germs swallowed with food. Here the digestive system is helping which other system?",
+    o:["Immune","Muscular","Respiratory","Excretory"], a:0,
+    e:"Stomach acid is one of the body's defenses against pathogens. It supports the immune system's job of protecting the body."}
+ ]},
+ { id:"air", title:"Air Supply", sub:"Respiratory + cardiovascular", std:"c", x:37, y:31,
+   qs:[
+   {t:"mc", q:"Where does oxygen move from the lungs into the blood?",
+    o:["Alveoli (tiny air sacs)","Trachea (windpipe)","Diaphragm","Esophagus"], a:0,
+    e:"The alveoli are surrounded by capillaries. Oxygen moves from the air sacs into the blood, and carbon dioxide moves from the blood into the air sacs."},
+   {t:"mc", q:"The diaphragm is a dome-shaped muscle below the lungs. When it contracts, what happens?",
+    o:["Air is pulled into the lungs","Air is pushed out of the lungs","The heart stops beating","Food moves into the stomach"], a:0,
+    e:"When the diaphragm contracts, it flattens and makes more space in the chest, so air rushes in. This is the muscular and respiratory systems working together."},
+   {t:"mc", q:"Jordan's cells make carbon dioxide as a waste during cellular respiration. How does it leave the body?",
+    o:["The blood carries it to the lungs, and Jordan breathes it out","The kidneys turn it into urine","The stomach digests it","The muscles store it"], a:0,
+    e:"Carbon dioxide moves from cells into the blood, travels to the lungs, and is exhaled. The cardiovascular and respiratory systems team up to remove it."},
+   {t:"mc", q:"During the soccer game, Jordan's breathing rate AND heart rate both went up. What is the BEST explanation?",
+    o:["Working muscles need more oxygen and make more carbon dioxide, so both systems speed up delivery and removal","The heart and lungs only speed up when you are sick","Faster breathing helps digest food","The heart beats faster to make new blood cells"], a:0,
+    e:"Exercise raises muscle cells' demand for oxygen and energy. Breathing faster brings in more oxygen; a faster heart delivers it and carries CO₂ away."},
+   {t:"multi", n:2, q:"Tiny hairs called cilia and sticky mucus in Jordan's airways trap dust and germs. Pick the TWO systems working together.",
+    o:["Respiratory","Immune","Excretory","Muscular"], a:[0,1],
+    e:"The airways are part of the respiratory system, and trapping germs before they reach the lungs is a defense that supports the immune system."},
+   {t:"mc", q:"What would happen to Jordan's muscle cells if the cardiovascular system stopped delivering oxygen-rich blood?",
+    o:["Their mitochondria couldn't release enough energy, so the muscles would weaken and stop working","Nothing, because muscles store all the oxygen they need","They would start doing photosynthesis","They would turn into a different kind of tissue"], a:0,
+    e:"Mitochondria need oxygen to release energy from glucose. No oxygen delivery means not enough energy for the cell. This links the cell level to the system level."}
+ ]},
+ { id:"brain", title:"Command Center", sub:"Nervous + muscular", std:"c", x:50, y:10,
+   qs:[
+   {t:"mc", q:"What are the main parts of the nervous system?",
+    o:["Brain, spinal cord, and nerves","Heart, arteries, and veins","Kidneys, ureters, and bladder","Lungs, trachea, and bronchi"], a:0,
+    e:"The brain, spinal cord, and nerves carry signals that control and coordinate the whole body."},
+   {t:"order", q:"Jordan touches a hot pan. Put the reflex in order.",
+    o:["Nerve endings in the skin sense heat","A sensory nerve carries the signal to the spinal cord","The spinal cord sends a signal out through a motor nerve","Arm muscles contract","Jordan's hand pulls away"],
+    e:"In a reflex, the signal goes to the spinal cord and straight back out to the muscles, so Jordan usually pulls away before even feeling the pain."},
+   {t:"mc", q:"Skeletal muscles move Jordan's bones by…",
+    o:["Pulling (contracting)","Pushing","Pushing and pulling equally","Growing longer"], a:0,
+    e:"Muscles can only pull. That's why they work in pairs: one muscle pulls a bone one way, and its partner pulls it back."},
+   {t:"mc", q:"Which type of muscle is found only in the heart?",
+    o:["Cardiac muscle","Smooth muscle","Skeletal muscle","Voluntary muscle"], a:0,
+    e:"Cardiac muscle is found only in the heart. It contracts on its own rhythm to pump blood, without you having to think about it."},
+   {t:"mc", q:"Which piece of evidence BEST supports the claim that the nervous and muscular systems work together?",
+    o:["The brain sends signals through nerves that cause muscles to contract","Muscles are attached to bones","Nerves are found in the skin","The heart pumps blood to the brain"], a:0,
+    e:"Strong evidence directly connects both systems. Nerve signals trigger muscle contractions, which is the interaction the claim is about."},
+   {t:"mc", q:"Jordan keeps breathing even while asleep. What makes that happen?",
+    o:["The brain automatically sends signals to the diaphragm to contract","The lungs decide to breathe on their own","The stomach controls breathing","The kidneys control breathing"], a:0,
+    e:"The brainstem, part of the brain, automatically signals the diaphragm to contract. Nervous, muscular, and respiratory systems all work together here."}
+ ]},
+ { id:"clean", title:"Clean-Up & Defense", sub:"Excretory + immune", std:"c", x:39, y:49,
+   qs:[
+   {t:"mc", q:"What is the main job of the kidneys?",
+    o:["Filter wastes and extra water out of the blood to make urine","Pump blood around the body","Absorb nutrients from food","Exchange oxygen and carbon dioxide"], a:0,
+    e:"The kidneys filter the blood, removing wastes and extra water, which leave the body as urine."},
+   {t:"mc", q:"Why does the excretory system depend on the cardiovascular system?",
+    o:["Blood carries wastes to the kidneys so they can be filtered out","The kidneys pump the blood","The heart makes urine","Blood vessels store urine"], a:0,
+    e:"Wastes from cells enter the blood, and the blood brings them to the kidneys. Without blood flow, the kidneys couldn't clean anything."},
+   {t:"mc", q:"What is the main job of the immune system?",
+    o:["Defend the body against pathogens like bacteria and viruses","Break down food into nutrients","Carry oxygen to cells","Move the bones"], a:0,
+    e:"The immune system recognizes and fights pathogens, the germs that cause disease."},
+   {t:"mc", q:"Jordan scrapes a knee on the field. Which barrier that normally keeps germs out was just broken?",
+    o:["Skin","White blood cells","Kidneys","Stomach"], a:0,
+    e:"Unbroken skin is the body's first line of defense. A scrape opens a path for germs to enter, so the immune system has to respond."},
+   {t:"mc", q:"How do white blood cells reach the germs in Jordan's scraped knee?",
+    o:["They travel through blood vessels of the cardiovascular system","They travel through the digestive tract","They ride along the nerves","They travel through the air in the lungs"], a:0,
+    e:"White blood cells ride through the blood vessels, then squeeze out through tiny capillary walls near the scrape. The cardiovascular system is the immune system's highway."},
+   {t:"multi", n:2, q:"Pick TWO ways Jordan's body removes wastes.",
+    o:["Kidneys filter the blood to make urine","Lungs breathe out carbon dioxide","The heart stores wastes","Nerves carry wastes to the brain"], a:[0,1],
+    e:"The kidneys remove wastes as urine, and the lungs remove carbon dioxide when Jordan exhales. Getting rid of waste takes several systems."}
+ ]},
+ { id:"final", title:"Full-Body Scan", sub:"Put it all together", std:"c", x:59, y:32, final:true,
+   qs:[
+   {t:"order", std:"c", q:"Jordan ate a banana before the game. Trace how it becomes energy for a kick.",
+    o:["The digestive system breaks the banana down into glucose","The small intestine absorbs glucose into the blood","The heart pumps blood carrying glucose to leg muscle cells","Mitochondria use glucose and oxygen to release energy","Leg muscles contract to kick the ball"],
+    e:"Digestive, cardiovascular, and muscular systems all worked together, and the energy was released inside cells by mitochondria."},
+   {t:"order", std:"c", q:"Trace the path of oxygen from the air to a working muscle cell.",
+    o:["Air travels down the trachea","Air reaches the alveoli in the lungs","Oxygen moves into capillaries around the alveoli","The heart pumps oxygen-rich blood through arteries","Muscle cells use the oxygen in their mitochondria"],
+    e:"The respiratory system brings oxygen in, the cardiovascular system delivers it, and the cell uses it."},
+   {t:"order", std:"a", q:"Trace how carbon dioxide waste leaves Jordan's body.",
+    o:["Mitochondria produce carbon dioxide","Carbon dioxide moves out of the cell into the blood","Veins carry the blood back to the heart","The heart pumps the blood to the lungs","Jordan breathes out the carbon dioxide"],
+    e:"Waste made by a cell structure is carried by the cardiovascular system and removed by the respiratory system."},
+   {t:"mc", q:"Claim: “No body system works alone.” Which evidence BEST supports this claim?",
+    o:["To run, the nervous system signals muscles, while the respiratory and cardiovascular systems deliver the oxygen muscle cells need","The heart is an organ","The kidneys make urine","Skin covers the body"], a:0,
+    e:"The best evidence shows several systems depending on each other for one life process. The other choices each describe only one system."}
+ ]}
+];
+
+
+/* =========================================================
+   SOURCES — every question checked against these
+   ========================================================= */
+const SRC = {
+ B43:{n:"OpenStax Biology 2e, 4.3 Eukaryotic Cells", u:"https://openstax.org/books/biology-2e/pages/4-3-eukaryotic-cells"},
+ AP12:{n:"OpenStax Anatomy & Physiology 2e, 1.2 Structural Organization", u:"https://openstax.org/books/anatomy-and-physiology-2e/pages/1-2-structural-organization-of-the-human-body"},
+ FAQ:{n:"GaDOE, GSE Science FAQ & Clarifications (2021), S7L2", u:"https://inspire.gadoe.org/user-files/9391da0f-5dd6-4e64-8075-9bab16f9cf44.pdf"},
+ B343:{n:"OpenStax Biology 2e, 34.3 Digestive System Processes", u:"https://openstax.org/books/biology-2e/pages/34-3-digestive-system-processes"},
+ B34K:{n:"OpenStax Biology 2e, Ch. 34 Key Terms (peristalsis)", u:"https://openstax.org/books/biology-2e/pages/34-key-terms"},
+ AP235:{n:"OpenStax Anatomy & Physiology 2e, 23.5 Small and Large Intestines", u:"https://openstax.org/books/anatomy-and-physiology-2e/pages/23-5-the-small-and-large-intestines"},
+ AP201:{n:"OpenStax Anatomy & Physiology 2e, 20.1 Structure and Function of Blood Vessels", u:"https://openstax.org/books/anatomy-and-physiology-2e/pages/20-1-structure-and-function-of-blood-vessels"},
+ B421:{n:"OpenStax Biology 2e, 42.1 Innate Immune Response", u:"https://openstax.org/books/biology-2e/pages/42-1-innate-immune-response"},
+ AP212:{n:"OpenStax Anatomy & Physiology 2e, 21.2 Barrier Defenses", u:"https://openstax.org/books/anatomy-and-physiology-2e/pages/21-2-barrier-defenses-and-the-innate-immune-response"},
+ AP223:{n:"OpenStax Anatomy & Physiology 2e, 22.3 The Process of Breathing", u:"https://openstax.org/books/anatomy-and-physiology-2e/pages/22-3-the-process-of-breathing"},
+ AP224:{n:"OpenStax Anatomy & Physiology 2e, 22.4 Gas Exchange", u:"https://openstax.org/books/anatomy-and-physiology-2e/pages/22-4-gas-exchange"},
+ AP194:{n:"OpenStax Anatomy & Physiology 2e, 19.4 Cardiac Physiology", u:"https://openstax.org/books/anatomy-and-physiology-2e/pages/19-4-cardiac-physiology"},
+ AP122:{n:"OpenStax Anatomy & Physiology 2e, 12.1 Basic Structure and Function of the Nervous System", u:"https://openstax.org/books/anatomy-and-physiology-2e/pages/12-1-basic-structure-and-function-of-the-nervous-system"},
+ AP143:{n:"OpenStax Anatomy & Physiology 2e, 14.3 Motor Responses (reflexes)", u:"https://openstax.org/books/anatomy-and-physiology-2e/pages/14-3-motor-responses"},
+ AP111:{n:"OpenStax Anatomy & Physiology 2e, 11.1 Interactions of Skeletal Muscles", u:"https://openstax.org/books/anatomy-and-physiology-2e/pages/11-1-interactions-of-skeletal-muscles-their-fascicle-arrangement-and-their-lever-systems"},
+ AP107:{n:"OpenStax Anatomy & Physiology 2e, 10.7 Cardiac Muscle Tissue", u:"https://openstax.org/books/anatomy-and-physiology-2e/pages/10-7-cardiac-muscle-tissue"},
+ AP22R:{n:"OpenStax Anatomy & Physiology 2e, Ch. 22 Review (22.6 breathing during exercise)", u:"https://openstax.org/books/anatomy-and-physiology-2e/pages/22-chapter-review"},
+ AP108:{n:"OpenStax Anatomy & Physiology 2e, 10.8 Smooth Muscle", u:"https://openstax.org/books/anatomy-and-physiology-2e/pages/10-8-smooth-muscle"},
+ AP4R:{n:"OpenStax Anatomy & Physiology 2e, Ch. 4 Review (4.1 Types of Tissues)", u:"https://openstax.org/books/anatomy-and-physiology-2e/pages/4-chapter-review"},
+ B39I:{n:"OpenStax Biology 2e, Ch. 39 Introduction (breathing rate)", u:"https://openstax.org/books/biology-2e/pages/39-introduction"},
+ NIDDK:{n:"NIH / NIDDK, Your Kidneys & How They Work", u:"https://www.niddk.nih.gov/health-information/kidney-disease/kidneys-how-they-work"},
+ AP184:{n:"OpenStax Anatomy & Physiology, 18.4 Leukocytes and Platelets", u:"https://openstax.org/books/anatomy-and-physiology/pages/18-4-leukocytes-and-platelets"}
+};
+const QSRC = {
+ cell:[["B43"],["B43"],["B43"],["B43"],["B43"],["B43"],["B43"]],
+ org:[["AP12"],["AP12"],["AP12","FAQ"],["AP12"],["AP12"],["AP12"]],
+ fuel:[["B343"],["B343","AP235"],["AP235"],["B34K","B343"],["AP201"],["B421","AP212"]],
+ air:[["AP224"],["AP223"],["B43","AP224"],["AP22R","AP194"],["B421","AP212"],["B43"]],
+ brain:[["AP122"],["AP143"],["AP111"],["AP107"],["AP143"],["AP223"]],
+ clean:[["NIDDK"],["NIDDK"],["B421"],["B421"],["AP184"],["NIDDK","AP224"]],
+ final:[["B343","AP235","B43"],["AP224","AP201","B43"],["B43","AP224"],["FAQ","AP223"]]
+};
+MISSIONS.forEach(m=>m.qs.forEach((q,i)=>{ q.s = QSRC[m.id][i]; }));
+function srcLine(q){
+  if(!q.s) return "";
+  return `<p class="srcline">Source: ${q.s.map(k=>`<a href="${SRC[k].u}" target="_blank" rel="noopener">${esc(SRC[k].n)}</a>`).join("; ")}</p>`;
+}
+
+
+
+/* =========================================================
+   COLORS + STUDY BRIEFINGS (every fact checked against SRC)
+   ========================================================= */
+const MCOLOR = {cell:"var(--violet)", org:"var(--teal)", fuel:"var(--orange)", air:"var(--sky)", brain:"var(--amber)", clean:"var(--green)", final:"var(--rose)"};
+const ICON = {cell:"🔬", org:"🧱", fuel:"🍌", air:"🫁", brain:"🧠", clean:"🛡️", final:"🩺"};
+
+const STUDY = {
+ cell:{
+  idea:"A cell works like a tiny system. Each structure has a job, and they work together so the cell can take in nutrients, grow, reproduce, make what it needs, and get rid of waste.",
+  cardsTitle:"Flip the cards: the 7 structures in the standard",
+  cards:[
+   ["Nucleus","Holds the cell's DNA and directs the cell's activities, like making proteins."],
+   ["Cell membrane","The flexible gatekeeper. Lets nutrients, water, and oxygen in, and lets wastes like carbon dioxide out."],
+   ["Cytoplasm","The gel-like filling between the membrane and nucleus. Organelles sit here, and many reactions happen here."],
+   ["Mitochondria","Use oxygen to release energy from glucose. This is cellular respiration, and it makes carbon dioxide as waste."],
+   ["Lysosome","The clean-up crew. Its enzymes break down wastes and worn-out cell parts. Found in animal cells."],
+   ["Cell wall","A stiff outer layer that supports, protects, and shapes plant cells. Animal cells don't have one."],
+   ["Chloroplast","Uses light energy, water, and carbon dioxide to make glucose and oxygen (photosynthesis). Found in plants and algae, not animals."]
+  ],
+  table:{title:"Plant cell vs. animal cell", head:["Structure","Plant cell","Animal cell"], rows:[
+   ["Nucleus","yes","yes"],["Cell membrane","yes","yes"],["Cytoplasm","yes","yes"],["Mitochondria","yes","yes"],
+   ["Cell wall","yes","no"],["Chloroplasts","yes","no"],["Lysosomes","Most don't","yes"]]},
+  chainTitle:"How the parts work as a team",
+  chain:["Glucose and oxygen enter through the cell membrane","Mitochondria release the energy stored in glucose","The nucleus directs the cell to grow and make materials","Lysosomes break down wastes and worn-out parts","Wastes like carbon dioxide leave through the membrane"],
+  facts:["The carbon dioxide you breathe out was made inside your mitochondria.","Muscle cells are packed with extra mitochondria because moving takes a lot of energy."],
+  src:["B43"]},
+ org:{
+  idea:"Your body is built in levels. Each level is made from the one below it and works as part of the one above it.",
+  ladderTitle:"Climb the levels (smallest to largest)",
+  ladder:[["Cell","The smallest unit that can function on its own","Cardiac muscle cell"],["Tissue","A group of similar cells doing the same job","Cardiac muscle tissue"],["Organ","Two or more kinds of tissue working together","Heart"],["Organ system","Organs working together on a big job","Cardiovascular system"],["Organism","All the systems working together as one living thing","Jordan!"]],
+  cardsTitle:"Flip the cards: the 4 tissue types",
+  cards:[["Epithelial tissue","Sheets of cells that cover body surfaces and line organs and passageways."],["Connective tissue","Binds body parts together and supports and protects organs."],["Muscle tissue","Contracts to make the body move."],["Nervous tissue","Carries information as signals."]],
+  facts:["Jordan's heart is one organ built from several tissues: muscle, connective, and epithelial tissue work together so it can receive and pump blood.","Your body has more than 200 kinds of cells, but they all fit into just 4 tissue types."],
+  src:["AP12","AP4R","FAQ"]},
+ fuel:{
+  idea:"The digestive system breaks food into nutrients small enough to enter the blood. Then the cardiovascular system delivers them to every cell.",
+  cardsTitle:"Flip the cards",
+  cards:[
+   ["Digestion","Breaking food down, by chewing, churning, and chemicals, into molecules small enough to absorb."],
+   ["Peristalsis","Waves of muscle contraction that push food through the esophagus and intestines."],
+   ["Small intestine","Where most nutrients are absorbed. Its lining is covered in finger-like villi packed with capillaries."],
+   ["Large intestine","Reabsorbs water from undigested material and stores waste until it leaves the body."],
+   ["Arteries & veins","Arteries carry blood away from the heart. Veins carry it back to the heart."],
+   ["Capillaries","The tiniest blood vessels, where nutrients, gases, and wastes are exchanged with cells."]
+  ],
+  chainTitle:"The trip from banana to body cell",
+  chain:["Mouth: chewing starts breaking the food down","Esophagus: peristalsis pushes the food to the stomach","Stomach: acid and enzymes keep breaking it down","Small intestine: nutrients pass into capillaries in the villi","Heart pumps nutrient-rich blood out to every cell"],
+  facts:["Each square millimeter of small intestine has about 20 to 40 villi, and each one is covered in even tinier microvilli. All those folds give nutrients a huge surface to cross.","Stomach acid does double duty: it helps digest food and kills many germs you swallow."],
+  src:["B343","B34K","AP235","AP201","AP212"]},
+ air:{
+  idea:"The respiratory system brings oxygen in and sends carbon dioxide out. The cardiovascular system carries both gases between the lungs and every cell.",
+  cardsTitle:"Flip the cards",
+  cards:[
+   ["Trachea","The windpipe. Carries air down toward the lungs."],
+   ["Alveoli","Tiny air sacs wrapped in capillaries. Oxygen moves into the blood here, and carbon dioxide moves out."],
+   ["Diaphragm","A dome-shaped muscle under the lungs. It contracts to pull air in and relaxes to let air out."],
+   ["Brainstem","Part of the brain (the medulla) that sets your breathing rhythm automatically."],
+   ["Mucus & cilia","Sticky mucus traps dust and germs, and tiny hair-like cilia sweep it out of the airways."],
+   ["During exercise","Breathing rate and heart rate both go up so working muscles get more oxygen."]
+  ],
+  chainTitle:"Follow one breath",
+  chain:["Air travels down the trachea into the lungs","Air fills the alveoli","Oxygen moves into the surrounding capillaries","The heart pumps oxygen-rich blood to body cells","Carbon dioxide rides back to the lungs and is breathed out"],
+  facts:["When you're resting, you breathe about 15 times a minute without ever thinking about it.","Breathing in takes work from the diaphragm, which is a muscle. That's the muscular and respiratory systems teaming up."],
+  src:["AP223","AP224","B421","AP22R","AP194","B39I"]},
+ brain:{
+  idea:"The nervous system is the body's messenger. It senses what's happening and sends signals that tell muscles what to do.",
+  cardsTitle:"Flip the cards",
+  cards:[
+   ["Central nervous system","Your brain and spinal cord."],
+   ["Peripheral nervous system","The nerves that connect the brain and spinal cord to the rest of the body."],
+   ["Skeletal muscle","Attached to bones. Pulls on them to move your body when you decide to move."],
+   ["Smooth muscle","In the walls of hollow organs like the stomach and intestines, and in blood vessels. Works automatically."],
+   ["Cardiac muscle","Found only in the heart. Its coordinated contractions pump blood."],
+   ["Muscle pairs","Muscles can only pull, so they work in pairs, like the biceps and triceps in your arm."]
+  ],
+  chainTitle:"The 5 parts of a reflex (touching a hot pan)",
+  chain:["Receptor: nerve endings in the skin sense heat","Sensory neuron carries the signal in","Spinal cord processes it","Motor neuron carries the command out","Arm muscle contracts and pulls the hand away"],
+  facts:["In a reflex, you usually pull away from something hot before you even feel the pain, because the signal only travels to your spinal cord and back.","Three muscle types, three jobs: skeletal moves bones, smooth moves materials inside organs, cardiac pumps blood."],
+  src:["AP122","AP143","AP111","AP108","AP107"]},
+ clean:{
+  idea:"Cells constantly make wastes and face germs. The excretory system cleans the blood, the immune system defends the body, and both depend on the cardiovascular system.",
+  cardsTitle:"Flip the cards",
+  cards:[
+   ["Kidneys","Filter wastes and extra water out of the blood to make urine."],
+   ["Ureters & bladder","Urine flows from the kidneys through two thin tubes called ureters to the bladder."],
+   ["Lungs","Also remove waste: the carbon dioxide your cells make, every time you breathe out."],
+   ["Skin","The first barrier. Unbroken skin keeps most germs out."],
+   ["More barriers","Tears and mucus trap and rinse germs away, and stomach acid stops many from growing."],
+   ["White blood cells","Travel through the blood, then squeeze out of capillaries to fight germs in the tissues."]
+  ],
+  chainTitle:"How blood gets cleaned",
+  chain:["Cells make wastes as they work","Wastes move into the blood","The heart pumps blood to the kidneys","Kidneys filter out wastes and extra water","Urine flows to the bladder and leaves the body"],
+  facts:["Healthy kidneys filter about half a cup of blood every minute.","Even urinating helps your immune system, because it flushes germs out of the urinary tract."],
+  src:["NIDDK","AP224","B421","AP184"]},
+ final:{
+  idea:"No body system works alone. Every life process, like moving, breathing, or fighting germs, depends on several systems working together.",
+  systems:[
+   ["Cardiovascular","var(--rose)","Heart, blood, and blood vessels. Delivers oxygen and nutrients, carries wastes away, and is the highway for white blood cells."],
+   ["Respiratory","var(--sky)","Brings in oxygen and removes carbon dioxide."],
+   ["Digestive","var(--orange)","Breaks food into nutrients the blood can absorb."],
+   ["Excretory","var(--green)","Kidneys filter wastes and extra water out of the blood."],
+   ["Muscular","var(--violet)","Moves the body, pumps the heart, pushes food along, and powers breathing."],
+   ["Nervous","var(--amber)","Brain, spinal cord, and nerves. Senses the world and sends signals that control the body."],
+   ["Immune","var(--teal)","Defends the body against pathogens like bacteria and viruses."]
+  ],
+  cer:[["Claim","The respiratory and cardiovascular systems work together."],["Evidence","During exercise, both breathing rate and heart rate go up."],["Reasoning","Working muscles need more oxygen. The lungs take it in and the heart pumps it to the muscles, so both systems speed up together."]],
+  facts:["Georgia's own standards use this example: the digestive, respiratory, and circulatory systems work together to break down food and deliver it and oxygen to cells, where they're used for energy, growth, and repair."],
+  src:["FAQ","AP22R","AP194"]}
+};
+
+/* =========================================================
+   EXTRA SOURCES for the new cases (all openstax.org)
+   ========================================================= */
+Object.assign(SRC, {
+ B44:{n:"OpenStax Biology 2e, 4.4 The Endomembrane System (lysosomes in macrophages)", u:"https://openstax.org/books/biology-2e/pages/4-4-the-endomembrane-system-and-proteins"},
+ AP18K:{n:"OpenStax Anatomy & Physiology 2e, Ch. 18 Key Terms (blood is connective tissue)", u:"https://openstax.org/books/anatomy-and-physiology-2e/pages/18-key-terms"},
+ AP194T:{n:"OpenStax Anatomy & Physiology, 19.4 Cardiac Physiology (factors that raise heart rate)", u:"https://openstax.org/books/anatomy-and-physiology/pages/19-4-cardiac-physiology"},
+ AP132:{n:"OpenStax Anatomy & Physiology 2e, 13.2 The Central Nervous System", u:"https://openstax.org/books/anatomy-and-physiology-2e/pages/13-2-the-central-nervous-system"}
+});
+
+/* =========================================================
+   BODY-SYSTEM TAGS (the 7 systems named in S7L2.c)
+   ========================================================= */
+const SYS = {CV:"Cardiovascular", RE:"Respiratory", DI:"Digestive", EX:"Excretory", MU:"Muscular", NE:"Nervous", IM:"Immune"};
+const SYSCOLOR = {CV:"var(--rose)", RE:"var(--sky)", DI:"var(--orange)", EX:"var(--green)", MU:"var(--violet)", NE:"var(--amber)", IM:"var(--teal)"};
+const JSYS = {
+ cell:[["MU"],[],[],[],[],[],["MU"]],
+ org:[[],[],["CV"],["DI"],["CV"],[]],
+ fuel:[["DI"],["DI"],["DI","CV"],["DI","MU"],["CV"],["DI","IM"]],
+ air:[["RE"],["RE","MU"],["RE","CV"],["RE","CV","MU"],["RE","IM"],["CV","MU"]],
+ brain:[["NE"],["NE","MU"],["MU"],["MU","CV"],["NE","MU"],["NE","RE","MU"]],
+ clean:[["EX"],["EX","CV"],["IM"],["IM"],["IM","CV"],["EX","RE"]],
+ final:[["DI","CV","MU"],["RE","CV"],["RE","CV"],["NE","MU","RE","CV"]]
+};
+MISSIONS.forEach(m=>{ m.study=m.id; m.icon=ICON[m.id]; m.qs.forEach((q,i)=>{ q.sys=JSYS[m.id][i]; }); });
+
+/* =========================================================
+   NEW PATIENT CASES — each one covers all 7 systems + S7L2.a + S7L2.b
+   ========================================================= */
+const Q = (o)=>o;
+const LEO = [
+ { id:"leo-lunch", title:"Lunch Line", sub:"Digestion starts", std:"c", x:57, y:43, study:"fuel", icon:"🥪", qs:[
+  Q({t:"order", std:"b", sys:["DI"], s:["AP12","AP4R","AP235"], q:"Leo's sandwich is absorbed by cells lining his small intestine. Put these in order from smallest to largest.",
+    o:["An absorptive cell in the intestine lining","Epithelial tissue lining the intestine","The small intestine","The digestive system","Leo"],
+    e:"A cell is the smallest level. Similar cells form tissue, tissues form an organ, organs form a system, and systems make up the whole organism."}),
+  Q({t:"mc", sys:["DI","MU"], s:["B34K","B343"], q:"Leo swallows a bite. What moves it down his esophagus to his stomach?",
+    o:["Waves of muscle contraction called peristalsis","Gravity alone pulls it down","His lungs push it down","White blood cells carry it"], a:0,
+    e:"Peristalsis is wave-like muscle contraction that pushes food along. That's the muscular and digestive systems working together."}),
+  Q({t:"mc", std:"a", sys:["DI"], s:["B43"], q:"Cells lining Leo's small intestine have their cell membrane folded into thousands of tiny finger-like microvilli. Why?",
+    o:["It gives much more surface area for absorbing nutrients","It lets the cells store extra DNA","It lets the cells make food by photosynthesis","It helps the cells pump blood"], a:0,
+    e:"Form follows function. More membrane surface means more room for nutrients to pass into the cell."}),
+  Q({t:"mc", sys:["DI","IM"], s:["AP212","B421"], q:"Leo didn't wash his hands, so a few germs went down with his sandwich. What in his stomach kills many of them?",
+    o:["Stomach acid","Cilia","The diaphragm","Cardiac muscle"], a:0,
+    e:"The acidic stomach is a barrier that's deadly to many germs. Here the digestive system helps the immune system."})
+ ]},
+ { id:"leo-pe", title:"PE: Running the Mile", sub:"Oxygen and energy", std:"c", x:59, y:32, study:"air", icon:"🏃", qs:[
+  Q({t:"mc", sys:["CV"], s:["AP201"], q:"Glucose from Leo's lunch is now in his blood. Which vessels carry that blood away from his heart to his leg muscles?",
+    o:["Arteries","Veins","Alveoli","Villi"], a:0,
+    e:"Arteries carry blood away from the heart. Veins bring it back. Capillaries in between exchange materials with cells."}),
+  Q({t:"mc", std:"a", sys:["MU"], s:["B43"], q:"Inside Leo's leg muscle cells, which structure uses glucose and oxygen to release energy?",
+    o:["Mitochondria","Cell wall","Chloroplast","Nucleus"], a:0,
+    e:"Mitochondria carry out cellular respiration, releasing energy from glucose and making carbon dioxide as waste."}),
+  Q({t:"multi", n:2, sys:["RE","CV"], s:["AP22R","AP194"], q:"Halfway through the mile, Leo is breathing hard and his heart is pounding. Pick the TWO systems speeding up to get more oxygen to his muscles.",
+    o:["Respiratory","Cardiovascular","Excretory","Digestive"], a:[0,1],
+    e:"Exercise increases both breathing and heart rate. The lungs bring in more oxygen, and the heart pumps it to working muscles faster."}),
+  Q({t:"mc", sys:["RE","CV"], s:["AP224"], q:"Where does the extra oxygen Leo breathes in actually enter his blood?",
+    o:["The alveoli in his lungs","His trachea","His stomach","His kidneys"], a:0,
+    e:"The alveoli are tiny air sacs wrapped in capillaries. Oxygen moves from the air sacs into the blood right there."})
+ ]},
+ { id:"leo-after", title:"After Class", sub:"Signals and clean-up", std:"c", x:50, y:10, study:"brain", icon:"🧠", qs:[
+  Q({t:"mc", sys:["NE","MU"], s:["AP143","AP122"], q:"A classmate tosses Leo a water bottle and he catches it. Which system sends the signals that tell his muscles to move?",
+    o:["Nervous","Excretory","Digestive","Immune"], a:0,
+    e:"The brain sends commands through the spinal cord and nerves to skeletal muscles, which contract."}),
+  Q({t:"mc", sys:["MU","NE"], s:["AP143","AP111"], q:"To bend his elbow and catch the bottle, Leo's biceps contracts. What does the triceps on the back of his arm need to do?",
+    o:["Relax, because it's the opposing muscle","Contract just as hard at the same time","Push the arm up","Turn into cardiac muscle"], a:0,
+    e:"Muscles work in opposing pairs. When the biceps contracts to bend the elbow, the triceps relaxes. To straighten the arm, they switch jobs."}),
+  Q({t:"mc", sys:["EX","CV"], s:["NIDDK"], q:"Leo's working muscle cells made extra waste. Which organs filter wastes out of his blood to make urine?",
+    o:["Kidneys","Heart","Stomach","Brain"], a:0,
+    e:"Blood carries wastes to the kidneys, which filter them out along with extra water. The result is urine."}),
+  Q({t:"mc", sys:["DI","CV"], s:["AP235","AP201"], q:"Which evidence BEST supports the claim that Leo's digestive and cardiovascular systems work together?",
+    o:["Nutrients from his sandwich pass into capillaries in his small intestine and are carried by blood to his muscles","His stomach churns food","His heart beats","He chews his sandwich"], a:0,
+    e:"The best evidence shows both systems connected in one process. The other choices each describe only one system."})
+ ]}
+];
+
+const AVA = [
+ { id:"ava-germs", title:"Germ Invasion", sub:"The first barriers", std:"c", x:37, y:31, study:"air", icon:"🤧", qs:[
+  Q({t:"mc", sys:["RE","IM"], s:["B421"], q:"A classmate sneezes near Ava. What in her nose and airways traps the germs first?",
+    o:["Sticky mucus","Her kidneys","Villi","Cardiac muscle"], a:0,
+    e:"Mucus traps germs and dust before they get deep into the lungs. It's a barrier that protects the body without skin."}),
+  Q({t:"order", sys:["RE","DI","IM"], s:["AP212"], q:"Tiny hair-like cilia move germ-filled mucus out of Ava's airways. Put its trip in order.",
+    o:["Mucus traps germs in the airway","Cilia sweep the mucus upward","The mucus reaches the mouth and is swallowed","Stomach acid destroys many of the germs"],
+    e:"Cilia move mucus up to the mouth, where it's swallowed into the acidic stomach, which is deadly to many germs."}),
+  Q({t:"mc", sys:["RE","DI","IM"], s:["AP212"], q:"When germ-filled mucus from Ava's airways ends up in her stomach acid, which systems are working together?",
+    o:["Respiratory, digestive, and immune","Nervous and excretory only","Muscular only","Excretory only"], a:0,
+    e:"The airways (respiratory) move the mucus, the stomach (digestive) destroys germs, and the whole job protects the body (immune)."}),
+  Q({t:"mc", std:"b", sys:["CV","IM"], s:["AP18K","AP4R"], q:"Ava's white blood cells travel in her blood. Blood is classified as which type of tissue?",
+    o:["Connective tissue","Nervous tissue","Muscle tissue","Epithelial tissue"], a:0,
+    e:"Blood is a liquid connective tissue made of cells (like red and white blood cells) floating in plasma."})
+ ]},
+ { id:"ava-fight", title:"Fighting Back", sub:"White blood cells at work", std:"c", x:59, y:32, study:"clean", icon:"🦠", qs:[
+  Q({t:"mc", sys:["IM","CV"], s:["AP184"], q:"Some germs get past Ava's barriers. How do her white blood cells reach them?",
+    o:["They travel in the blood, then squeeze out through capillary walls","They travel through the digestive tract","They ride along nerves","They float through the air in the lungs"], a:0,
+    e:"For white blood cells, blood vessels are a highway. They exit through capillary walls to reach infected tissue."}),
+  Q({t:"mc", std:"a", sys:["IM"], s:["B44"], q:"A white blood cell called a macrophage swallows a bacterium. Which cell structure's enzymes destroy it?",
+    o:["Lysosome","Chloroplast","Cell wall","Nucleus"], a:0,
+    e:"The bacterium is wrapped in a bubble of membrane, which fuses with a lysosome. The lysosome's enzymes destroy it."}),
+  Q({t:"mc", std:"a", sys:["IM"], s:["B44","B43"], q:"The macrophage's cell membrane folds around the bacterium to pull it inside. Which job of the cell membrane does this show?",
+    o:["Controlling what enters the cell","Making glucose","Storing DNA","Giving plant cells a stiff shape"], a:0,
+    e:"The cell membrane controls what moves in and out of the cell. Here it actively wraps around and brings in the bacterium."}),
+  Q({t:"mc", sys:["CV"], s:["AP194T"], q:"Ava gets a fever, and her body temperature goes up. What tends to happen to her heart rate?",
+    o:["It tends to increase","It tends to decrease","It stays exactly the same no matter what","The heart stops pumping during a fever"], a:0,
+    e:"A higher body temperature is one of the factors that raise heart rate."})
+ ]},
+ { id:"ava-recover", title:"Recovery", sub:"Rest, fluids, and control", std:"c", x:39, y:49, study:"clean", icon:"🛌", qs:[
+  Q({t:"mc", sys:["NE","RE","MU"], s:["AP223"], q:"Ava breathes all night while she sleeps off her cold. What keeps her breathing without her thinking about it?",
+    o:["Her brainstem (medulla) automatically signals her diaphragm","Her stomach","Her kidneys","Her lungs decide on their own"], a:0,
+    e:"The medulla in the brainstem sets the breathing rhythm and signals the diaphragm, a muscle, to contract."}),
+  Q({t:"mc", sys:["EX","CV"], s:["NIDDK"], q:"Ava drinks plenty of fluids. What do her kidneys do with water her body doesn't need?",
+    o:["Filter it out of the blood so it leaves in urine","Store it in the lungs","Turn it into mucus","Send it to the brain"], a:0,
+    e:"Kidneys filter wastes and extra water from the blood, making urine."}),
+  Q({t:"mc", sys:["EX","IM"], s:["B421"], q:"Even urinating helps defend Ava's body. How?",
+    o:["It flushes germs out of the urinary tract","It makes new white blood cells","It heats the body","It produces mucus"], a:0,
+    e:"Urine flow washes germs out of the urinary tract. Here the excretory system supports the immune system."}),
+  Q({t:"mc", sys:["IM","CV"], s:["AP184"], q:"Which evidence BEST supports the claim that Ava's immune and cardiovascular systems interact?",
+    o:["White blood cells travel through her blood vessels to reach infected tissue","Mucus is sticky","Her kidneys make urine","Her diaphragm contracts"], a:0,
+    e:"The best evidence links both systems in one process: the immune system's cells depend on the cardiovascular system to get where they're needed."})
+ ]}
+];
+
+const SOFIA = [
+ { id:"sofia-nerves", title:"Nerves Before Class", sub:"Brain, heart, and breathing", std:"c", x:50, y:10, study:"brain", icon:"😬", qs:[
+  Q({t:"mc", sys:["NE","CV"], s:["AP194T"], q:"Right before her science fair presentation, Sofia feels nervous and her heart starts racing. What does this show?",
+    o:["Strong emotions, sensed by the brain, can speed up the heart","The heart and brain never communicate","Only exercise can change heart rate","Her kidneys control her heart rate"], a:0,
+    e:"Strong emotions and even anticipation are known factors that raise heart rate. The nervous system sends that signal to the heart."}),
+  Q({t:"mc", sys:["NE","RE"], s:["AP223"], q:"Sofia's breathing speeds up too. Which system monitors her emotional state and helps adjust her breathing?",
+    o:["Nervous system (brain)","Digestive system","Excretory system","Immune system"], a:0,
+    e:"Part of the brain monitors emotional state and body temperature and feeds that into the brain's breathing centers."}),
+  Q({t:"mc", sys:["NE","RE"], s:["AP223"], q:"To calm down, Sofia takes a slow, deep breath on purpose. Which statement is true?",
+    o:["She can consciously control breathing, even though her brainstem usually runs it automatically","Breathing can never be controlled on purpose","Her stomach controls deep breaths","Only her heart controls breathing"], a:0,
+    e:"The brainstem runs breathing automatically, but other parts of the brain let you control it on purpose, like when you sing or hold your breath."}),
+  Q({t:"mc", sys:["MU","RE"], s:["AP223"], q:"When Sofia breathes in deeply, which muscle contracts to pull air into her lungs?",
+    o:["Diaphragm","Biceps","Cardiac muscle","Smooth muscle of the stomach"], a:0,
+    e:"The diaphragm contracts and flattens, making room in the chest so air rushes in."})
+ ]},
+ { id:"sofia-fuel", title:"Fuel for the Brain", sub:"Breakfast to brain cells", std:"c", x:57, y:43, study:"fuel", icon:"🥣", qs:[
+  Q({t:"mc", sys:["DI"], s:["AP235"], q:"Sofia ate oatmeal for breakfast. Where do most of its nutrients enter her blood?",
+    o:["Small intestine","Large intestine","Esophagus","Mouth"], a:0,
+    e:"The small intestine's villi are packed with capillaries, and most nutrients are absorbed there."}),
+  Q({t:"order", sys:["DI","CV"], s:["B343","AP235","B43"], q:"Trace how breakfast becomes energy for Sofia's brain cells.",
+    o:["The digestive system breaks oatmeal down into glucose","The small intestine absorbs glucose into the blood","The heart pumps glucose-rich blood to the brain","Glucose enters brain cells through the cell membrane","Mitochondria release energy from the glucose"],
+    e:"Digestive, cardiovascular, and nervous systems connect all the way down to the cell structures that release energy."}),
+  Q({t:"mc", std:"b", sys:["NE"], s:["AP4R","AP132","AP12"], q:"Sofia's neurons (nerve cells) group together into nervous tissue. What level of organization is her brain?",
+    o:["Organ","Cell","Tissue","Organism"], a:0,
+    e:"The brain is one of the main organs of the nervous system. Organs are built from tissues, and tissues from cells."}),
+  Q({t:"mc", std:"a", sys:["NE"], s:["B43"], q:"Which structure inside Sofia's neurons holds the DNA that directs the cell's activities?",
+    o:["Nucleus","Chloroplast","Cell wall","Lysosome"], a:0,
+    e:"The nucleus houses the cell's DNA and directs what the cell makes and does."})
+ ]},
+ { id:"sofia-show", title:"Showtime", sub:"Moving, protecting, cleaning up", std:"c", x:13, y:56, study:"brain", icon:"🎤", qs:[
+  Q({t:"order", sys:["NE","MU"], s:["AP143","AP111"], q:"Sofia raises her arm to point at her poster. Put the signal in order.",
+    o:["The motor area of her brain sends the command","The signal travels down her spinal cord","A motor neuron carries it to her arm","Her arm muscle contracts and pulls on a bone","Her arm lifts to point"],
+    e:"Motor commands start in the brain, travel through the spinal cord, and go out along a motor neuron to skeletal muscle, which pulls on bone."}),
+  Q({t:"mc", sys:["IM"], s:["B421"], q:"Sofia's eyes water under the bright lights. Tears also help her immune system. How?",
+    o:["They trap and rinse away germs","They digest food","They pump blood","They filter urine"], a:0,
+    e:"Places not covered by skin, like the eyes, are protected by tears and mucus that trap and rinse away germs."}),
+  Q({t:"mc", sys:["EX","CV"], s:["NIDDK"], q:"Sofia drank a big bottle of water before presenting. Which organs remove the extra water from her blood?",
+    o:["Kidneys","Lungs","Heart","Brain"], a:0,
+    e:"The kidneys filter wastes and extra water from blood, making urine."}),
+  Q({t:"mc", sys:["NE","CV","RE"], s:["AP194T","AP223"], q:"Claim: Sofia's nervous system affected her other body systems during the presentation. Which evidence BEST supports the claim?",
+    o:["When she felt nervous, her heart rate and breathing both sped up","Her poster was colorful","Her stomach digested breakfast","Her kidneys filtered blood"], a:0,
+    e:"Strong evidence connects the nervous system to changes in other systems. The other choices don't involve the nervous system at all."})
+ ]}
+];
+
+const SCENARIOS = [
+ { id:"jordan", name:"Jordan", emoji:"⚽", title:"Jordan's Soccer Tournament", color:"var(--rose)", missions:MISSIONS, full:true,
+   blurb:"Jordan, 13, is wiped out after a double-header. The full course: 7 zones, one for each part of the standard." },
+ { id:"leo", name:"Leo", emoji:"🥪", title:"Leo's Lunch & PE", color:"var(--orange)", missions:LEO,
+   blurb:"Leo eats lunch in the cafeteria, then runs the mile in PE. Follow his sandwich all the way to his muscles." },
+ { id:"ava", name:"Ava", emoji:"🤧", title:"Ava Catches a Cold", color:"var(--sky)", missions:AVA,
+   blurb:"A classmate sneezes, and Ava's defenses kick in. See how her body fights off germs and recovers." },
+ { id:"sofia", name:"Sofia", emoji:"🎤", title:"Sofia's Big Presentation", color:"var(--violet)", missions:SOFIA,
+   blurb:"Science fair day! Sofia's nerves speed up her heart and breathing. Help her body stay on track." }
+];
+SCENARIOS.forEach(sc=>sc.missions.forEach(m=>m.qs.forEach(qq=>{ if(!qq.std) qq.std = m.std; })));
+
+function coverage(sc){
+  const c = {a:0,b:0,c:0}; const s = {}; Object.keys(SYS).forEach(k=>s[k]=0); let n=0;
+  sc.missions.forEach(m=>m.qs.forEach(qq=>{ n++; c[qq.std]++; (qq.sys||[]).forEach(k=>s[k]++); }));
+  return {std:c, sys:s, n};
+}
+
+
+/* =========================================================
+   LEARN MORE — student-level pages, each opened and checked (Sept 2026)
+   ========================================================= */
+const LINKS = {
+ khCell:{t:"What is a cell?", site:"MedlinePlus (NIH)", lvl:"Reading", u:"https://medlineplus.gov/genetics/understanding/basics/cell/", why:"Short, clear tour of the nucleus, cytoplasm, mitochondria, lysosomes, and cell membrane."},
+ seerBody:{t:"Introduction to the Human Body", site:"National Cancer Institute (NIH)", lvl:"Challenge", u:"https://training.seer.cancer.gov/anatomy/body/", why:"Cells, tissues, organs, and systems explained, with the stomach as an example organ built from four tissue types."},
+ khHub:{es:"https://kidshealth.org/es/kids/center/htbw-main-page.html", t:"How the Body Works", site:"Nemours KidsHealth", lvl:"Videos + quizzes", u:"https://kidshealth.org/en/kids/center/htbw-main-page.html", why:"Short movies and quizzes for every body system."},
+ khArticles:{es:"https://kidshealth.org/es/kids/bodyarticles.html", t:"How the Body Works: All Articles", site:"Nemours KidsHealth", lvl:"Reading", u:"https://kidshealth.org/en/kids/bodyarticles.html", why:"One medically reviewed article for each system, written for kids."},
+ khDigest:{es:"https://kidshealth.org/es/kids/digest.html", t:"Your Digestive System", site:"Nemours KidsHealth", lvl:"Reading", u:"https://kidshealth.org/en/kids/digestive-system.html", why:"Follows a school lunch from mouth to large intestine, including the muscle waves in the esophagus."},
+ khHeart:{es:"https://kidshealth.org/es/kids/heart.html", t:"Your Heart & Circulatory System", site:"Nemours KidsHealth", lvl:"Reading", u:"https://kidshealth.org/en/kids/heart.html", why:"Arteries vs. veins, heart chambers, and why your heart speeds up when you run or feel nervous."},
+ khLungs:{es:"https://kidshealth.org/es/kids/lungs.html", t:"Your Lungs & Respiratory System", site:"Nemours KidsHealth", lvl:"Reading", u:"https://kidshealth.org/en/kids/lungs.html", why:"The diaphragm, cilia, and how oxygen moves from alveoli into capillaries."},
+ khBrain:{es:"https://kidshealth.org/es/kids/brain.html", t:"Your Brain & Nervous System", site:"Nemours KidsHealth", lvl:"Reading", u:"https://kidshealth.org/en/kids/brain.html", why:"Brain parts, the spinal cord, and how the brain stem runs breathing and heartbeat."},
+ khMuscles:{es:"https://kidshealth.org/es/kids/muscles.html", t:"Your Muscles", site:"Nemours KidsHealth", lvl:"Reading", u:"https://kidshealth.org/en/kids/muscles.html", why:"Skeletal, smooth, and cardiac muscle, and why muscles work in pairs."},
+ khUrinary:{es:"https://kidshealth.org/es/kids/pee.html", t:"Your Urinary System", site:"Nemours KidsHealth", lvl:"Reading", u:"https://kidshealth.org/en/kids/pee.html", why:"How kidneys filter blood and why pee gets paler when you drink more water."},
+ khImmune:{es:"https://kidshealth.org/es/kids/immune.html", t:"Your Immune System", site:"Nemours KidsHealth", lvl:"Reading", u:"https://kidshealth.org/en/kids/immune.html", why:"White blood cells and how your body fights germs."},
+ niddk:{t:"Your Kidneys & How They Work", site:"NIDDK (NIH)", lvl:"Challenge", u:"https://www.niddk.nih.gov/health-information/kidney-disease/kidneys-how-they-work", why:"A closer look at how kidneys filter blood."}
+};
+const LEARN = {
+ cell:["khCell","khHub"],
+ org:["seerBody","khArticles"],
+ fuel:["khDigest","khHeart"],
+ air:["khLungs","khHeart"],
+ brain:["khBrain","khMuscles"],
+ clean:["khUrinary","khImmune","niddk"],
+ final:["khArticles","khHub"]
+};
+function learnHTML(id){
+  const keys = LEARN[id]; if(!keys) return "";
+  return `<h3>📚 Learn more</h3><div class="learn-grid">${keys.map(k=>{const L=LINKS[k];
+    return `<div class="learn"><span class="lvl-tag">${esc(L.lvl)}</span><a href="${L.u}" target="_blank" rel="noopener"><b>${esc(L.t)}</b></a><span class="site">${esc(L.site)}</span><span>${esc(L.why)}</span>${L.es?`<a class="es" href="${L.es}" target="_blank" rel="noopener" lang="es">🇪🇸 En español</a>`:""}</div>`;}).join("")}</div>
+    <p class="srcline">These open in a new tab. Every page was checked for accuracy and grade level.</p>`;
+}
+
+/* =========================================================
+   STATE
+   ========================================================= */
+const DEFAULT_TEAMS = ["Team Mitochondria","Team Alveoli","Team Neuron","Team Villi"];
+let S = null;
+let setup = { mode:"solo", teamCount:2, names:[...DEFAULT_TEAMS], player:"" };
+const app = document.getElementById("app");
+const REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function newState(){
+  const teams = setup.mode === "solo"
+    ? [{name: setup.player.trim() || "Medic", score:0, streak:0}]
+    : setup.names.slice(0, setup.teamCount).map((n,i)=>({name:(n||DEFAULT_TEAMS[i]).trim(), score:0, streak:0}));
+  const sys = {}; Object.keys(SYS).forEach(k=>sys[k]=[0,0]);
+  const health = {}; SCENARIOS.forEach(sc=>health[sc.id]=40);
+  return { mode:setup.mode, teams, turn:0, scn:null, health, results:{}, std:{a:[0,0],b:[0,0],c:[0,0]}, sys };
+}
+const curScn = () => SCENARIOS.find(s=>s.id===S.scn);
+const SAVE_KEY = "micromedics-save-v2";
+function save(){ try{ if(S) localStorage.setItem(SAVE_KEY, JSON.stringify({v:2, setup, S, at:Date.now()})); }catch(e){} }
+function loadSave(){ try{ const r=localStorage.getItem(SAVE_KEY); if(!r) return null; const d=JSON.parse(r); return d && d.v===2 && d.S ? d : null; }catch(e){ return null; } }
+function clearSave(){ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} }
+
+/* ---------- helpers ---------- */
+const esc = s => String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function shuffledOrder(n){ let o; do{ o=shuffle([...Array(n).keys()]); } while(n>1 && o.every((v,i)=>v===i)); return o; }
+const letters = "ABCDEF";
+function starsFor(pct){ return pct>=0.9?3:pct>=0.7?2:pct>0?1:0; }
+function starStr(n){ return "★".repeat(n)+"☆".repeat(3-n); }
+function condition(h){ if(h>=90) return "Game-ready"; if(h>=70) return "Bouncing back"; if(h>=50) return "Stabilizing"; if(h>=30) return "Not feeling great"; return "Needs help fast"; }
+const mcol = m => MCOLOR[m.study] || "var(--violet)";
+const mvarM = m => `--m:${mcol(m)}`;
+function srcList(keys){ return `<p class="srcline">Checked against: ${keys.map(k=>`<a href="${SRC[k].u}" target="_blank" rel="noopener">${esc(SRC[k].n)}</a>`).join("; ")}</p>`; }
+function sysChips(keys){ return `<span class="syschips">${keys.map(k=>`<span class="syschip fill" style="background:${SYSCOLOR[k]}">${SYS[k]}</span>`).join("")}</span>`; }
+
+/* ---------- floating cells background ---------- */
+(function makeCells(){
+  if(REDUCED) return;
+  const box=document.getElementById("cells");
+  const cols=["#E11D48","#DB2777","#7C3AED","#0EA5E9","#F59E0B","#22C55E","#F97316"];
+  let html="";
+  for(let i=0;i<14;i++){
+    const size=20+Math.random()*46, left=Math.random()*100, dur=18+Math.random()*22, delay=-Math.random()*dur;
+    html+=`<span style="width:${size}px;height:${size}px;left:${left}%;background:${cols[i%cols.length]};animation-duration:${dur}s;animation-delay:${delay}s"></span>`;
+  }
+  box.innerHTML=html;
+})();
+
+/* ---------- confetti ---------- */
+function confetti(originEl, count=28){
+  if(REDUCED) return;
+  const fx=document.getElementById("fx");
+  const r = originEl ? originEl.getBoundingClientRect() : {left:innerWidth/2,top:innerHeight/3,width:0,height:0};
+  const x=r.left+r.width/2, y=r.top+r.height/2;
+  const cols=["#E11D48","#DB2777","#7C3AED","#0EA5E9","#F59E0B","#22C55E","#F97316"];
+  for(let i=0;i<count;i++){
+    const p=document.createElement("i");
+    p.style.left=x+"px"; p.style.top=y+"px"; p.style.background=cols[i%cols.length];
+    fx.appendChild(p);
+    const ang=Math.random()*Math.PI*2, dist=80+Math.random()*180;
+    const dx=Math.cos(ang)*dist, dy=Math.sin(ang)*dist-120;
+    p.animate([{transform:"translate(0,0) rotate(0)",opacity:1},{transform:`translate(${dx}px,${dy+260}px) rotate(${Math.random()*720}deg)`,opacity:0}],
+      {duration:1100+Math.random()*500,easing:"cubic-bezier(.2,.7,.4,1)"}).onfinish=()=>p.remove();
+  }
+}
+
+/* ---------- vitals bar ---------- */
+function renderVitals(bumpIdx){
+  const v = document.getElementById("vitals");
+  v.classList.toggle("hidden", !S);
+  if(!S) return;
+  const sc = S.scn ? curScn() : null;
+  const h = sc ? S.health[sc.id] : 40;
+  document.getElementById("meterWho").textContent = sc ? `${sc.name}'s condition` : "Patient condition";
+  document.getElementById("meterFill").style.width = h + "%";
+  document.getElementById("meterBar").setAttribute("aria-valuenow", h);
+  document.getElementById("condText").textContent = sc ? condition(h) : "Choose a patient";
+  v.classList.toggle("fast", !!sc && h < 50);
+  document.getElementById("scoreChips").innerHTML = S.teams.map((t,i)=>
+    `<span class="chip ${S.mode==="teams" && i===S.turn ? "active fill":""} ${i===bumpIdx?"bump":""}">${esc(t.name)}: ${t.score}${t.streak>1?` 🔥${t.streak}`:""}</span>`).join("");
+}
+
+/* =========================================================
+   START SCREEN
+   ========================================================= */
+function titleLetters(txt){
+  const cols=["var(--violet)","var(--pink)","var(--orange)","var(--sky)","var(--green)","var(--rose)"];
+  let n=0;
+  return txt.split(" ").map(w=>`<span class="word">${[...w].map(ch=>{const i=n++;
+    return `<span style="animation-delay:${i*55}ms;color:${cols[i%6]}">${esc(ch)}</span>`;}).join("")}</span>`).join(" ");
+}
+function renderStart(){
+  S = null; renderVitals();
+  const saved = loadSave();
+  const total = SCENARIOS.reduce((t,sc)=>t+coverage(sc).n,0);
+  app.innerHTML = `
+  <section class="start">
+    <div>
+      <h1 class="title" aria-label="Micro Medics">${titleLetters("Micro Medics")}</h1>
+      <span class="sub-title">Body Systems Case Files</span>
+      <p class="story">Your medic crew gets shrunk down to cell size and sent inside four 7th graders having very different days. Study each body zone, answer questions to get each patient back to feeling great, and show that no body system works alone.</p>
+      ${saved?"":`<div class="mode-pick" role="group" aria-label="Play mode">
+        <button class="seg" type="button" data-mode="solo" aria-pressed="${setup.mode==="solo"}">Solo study</button>
+        <button class="seg" type="button" data-mode="teams" aria-pressed="${setup.mode==="teams"}">Class teams</button>
+      </div>
+      <div id="setupArea"></div>`}
+      ${saved?`<div class="resume"><b>Saved game found on this device.</b><br>Are you <b>${esc(saved.S.teams.map(x=>x.name).join(" & "))}</b>? ${Object.keys(saved.S.results).length} zone${Object.keys(saved.S.results).length===1?"":"s"} finished so far.
+        <div class="q-actions"><button class="primary" id="resume" type="button">Yes, that's me. Continue!</button><button class="secondary" id="fresh" type="button">No, I'm someone else</button></div>
+        <p style="margin:6px 0 0;font-size:.88rem;color:var(--muted)">Sharing a device? Always check the name before you continue.</p></div>`:
+      `<p><button class="primary" id="go" type="button">Open the case files</button></p>`}
+      <p><button class="link-btn" type="button" id="stdLink">See the Georgia standards and coverage</button> · <button class="link-btn" type="button" id="teacher">👩‍🏫 Teacher answer key 🔒</button></p>
+    </div>
+    <div class="chart" aria-label="Case files summary">
+      <h2 style="font-size:1.4rem;color:var(--violet)">📋 Case files</h2>
+      <dl>
+        ${SCENARIOS.map(sc=>`<dt>${sc.emoji} ${esc(sc.name)}</dt><dd>${esc(sc.title)}</dd>`).join("")}
+        <dt>Practice</dt><dd>${total} questions, all 7 body systems in every case</dd>
+        <dt>Scoring</dt><dd>100 per answer, 🔥 streak bonuses, −50 if you ask the nurse</dd>
+      </dl>
+    </div>
+  </section>`;
+  app.querySelectorAll(".seg").forEach(b=>b.onclick=()=>{ setup.mode=b.dataset.mode; renderStart(); });
+  if(!saved) renderSetupArea();
+  const go=document.getElementById("go"); if(go) go.onclick = ()=>{
+    if(setup.mode==="solo" && !setup.player.trim()){ const n=document.getElementById("pname"); n.focus(); n.placeholder="Type your first name here"; n.classList.add("need"); return; }
+    S=newState(); save(); renderCases(); };
+  const rs=document.getElementById("resume"); if(rs) rs.onclick = ()=>{ setup=saved.setup; S=saved.S; renderCases(); };
+  const fr=document.getElementById("fresh"); if(fr) fr.onclick = ()=>{ clearSave(); setup = { mode:"solo", teamCount:2, names:[...DEFAULT_TEAMS], player:"" }; renderStart(); const n=document.getElementById("pname"); if(n) n.focus(); };
+  document.getElementById("stdLink").onclick = openStd;
+  document.getElementById("teacher").onclick = renderTeacherGate;
+}
+function renderSetupArea(){
+  const area = document.getElementById("setupArea");
+  if(setup.mode==="solo"){
+    area.innerHTML = `<div class="team-setup"><label>Your medic name <input id="pname" maxlength="24" value="${esc(setup.player)}" placeholder="Medic"></label></div>`;
+    document.getElementById("pname").oninput = e=> setup.player = e.target.value;
+  } else {
+    area.innerHTML = `
+      <div class="mode-pick" role="group" aria-label="Number of teams">
+        ${[2,3,4].map(n=>`<button class="seg" type="button" data-n="${n}" aria-pressed="${setup.teamCount===n}">${n} teams</button>`).join("")}
+      </div>
+      <div class="team-setup">${setup.names.slice(0,setup.teamCount).map((n,i)=>
+        `<label>Team ${i+1} <input data-i="${i}" maxlength="24" value="${esc(n)}"></label>`).join("")}</div>
+      <p style="color:var(--muted);margin:4px 0">Teams take turns. Each question goes to the highlighted team.</p>`;
+    area.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>{ setup.teamCount=+b.dataset.n; renderSetupArea(); });
+    area.querySelectorAll("input[data-i]").forEach(inp=>inp.oninput=e=> setup.names[+e.target.dataset.i]=e.target.value);
+  }
+}
+
+/* =========================================================
+   CASE PICKER
+   ========================================================= */
+function renderCases(){
+  S.scn = null; renderVitals(); save();
+  app.innerHTML = `
+  <section>
+    <h2 class="pick-title">Choose a patient</h2>
+    <p style="margin:6px 0 0;color:var(--muted);text-align:center">Every case practices all 7 body systems in the standard, plus cell structures and levels of organization. Start with Jordan for the full course, or use the shorter cases for extra practice.</p>
+    <div class="case-grid">
+      ${SCENARIOS.map((sc,i)=>{
+        const cv = coverage(sc); const done = sc.missions.filter(m=>S.results[m.id]).length;
+        return `<button type="button" class="case" style="--c:${sc.color};animation-delay:${i*90}ms" data-scn="${sc.id}">
+          <span class="case-emoji" aria-hidden="true">${sc.emoji}</span>
+          <span class="case-name">${esc(sc.title)}</span>
+          <span class="case-blurb">${esc(sc.blurb)}</span>
+          <span class="case-meta">${sc.missions.length} zones · ${cv.n} questions${done?` · ${done}/${sc.missions.length} done`:""}${sc.full?" · Full course":""}</span>
+          ${sysChips(Object.keys(SYS).filter(k=>cv.sys[k]>0))}
+        </button>`;}).join("")}
+    </div>
+    <button type="button" class="lightning-card" id="lightning"><span class="bolt" aria-hidden="true">⚡</span><span><b>Lightning Round</b><br>90 seconds, questions from every case. How many can you get? Great for class review.</span></button>
+    <div class="map-actions" style="justify-content:center">
+      <button class="secondary" type="button" id="guide">📖 Study guide</button>
+      <button class="secondary" type="button" id="vocab">🔤 Vocabulary sheet</button>
+      <button class="secondary" type="button" id="finish">📊 Medical report</button>
+      <button class="link-btn" type="button" id="restart">Start over</button>
+    </div>
+  </section>`;
+  app.querySelectorAll("[data-scn]").forEach(b=>b.onclick=()=>{ S.scn=b.dataset.scn; renderMap(); });
+  document.getElementById("guide").onclick = ()=>renderBriefing("cell", true);
+  document.getElementById("vocab").onclick = renderVocab;
+  document.getElementById("lightning").onclick = renderLightningIntro;
+  document.getElementById("finish").onclick = renderReport;
+  document.getElementById("restart").onclick = ()=>{ if(confirm("Start over? All scores and saved progress will reset.")){ clearSave(); renderStart(); } };
+  window.scrollTo(0,0);
+}
+
+/* =========================================================
+   BODY MAP
+   ========================================================= */
+const BODY_SVG = `
+<svg viewBox="0 0 300 520" aria-hidden="true">
+  <g class="silhouette">
+    <circle cx="150" cy="58" r="40"/>
+    <rect x="134" y="92" width="32" height="26" rx="8"/>
+    <path d="M92 118 Q150 104 208 118 Q224 124 226 146 L228 280 Q228 300 208 304 L92 304 Q72 300 72 280 L74 146 Q76 124 92 118Z"/>
+    <path d="M78 130 Q56 138 50 170 L32 290 Q30 306 44 308 Q56 309 58 294 L78 184Z"/>
+    <path d="M222 130 Q244 138 250 170 L268 290 Q270 306 256 308 Q244 309 242 294 L222 184Z"/>
+    <path d="M96 300 L92 488 Q92 506 110 506 L130 506 Q140 504 140 492 L146 312Z"/>
+    <path d="M204 300 L208 488 Q208 506 190 506 L170 506 Q160 504 160 492 L154 312Z"/>
+  </g>
+  <g fill="none" stroke-width="3" opacity=".75">
+    <path stroke="var(--sky)" d="M120 150 Q104 170 110 214 Q128 226 142 206 L142 150Z"/>
+    <path stroke="var(--sky)" d="M180 150 Q196 170 190 214 Q172 226 158 206 L158 150Z"/>
+    <path stroke="var(--orange)" d="M166 226 Q196 228 190 256 Q176 270 156 258"/>
+    <path stroke="var(--rose)" d="M160 170 q8 -10 16 0 q8 10 -8 22 q-16 -12 -8 -22z"/>
+  </g>
+</svg>`;
+
+function renderMap(){
+  renderVitals();
+  const sc = curScn();
+  app.innerHTML = `
+  <section class="map">
+    <div>
+      <div class="patient-tag" style="--c:${sc.color}"><span aria-hidden="true">${sc.emoji}</span> ${esc(sc.title)}</div>
+      <div class="body-stage">
+        ${BODY_SVG}
+        ${sc.missions.map((m,i)=>`<button type="button" class="hot fill ${S.results[m.id]?"done":""}"
+            style="left:${m.x}%;top:${m.y}%;${mvarM(m)};animation-delay:${i*0.3}s" data-play="${m.id}" aria-label="Zone ${i+1}: ${esc(m.title)}">${i+1}</button>`).join("")}
+      </div>
+    </div>
+    <div>
+      <h2>${esc(sc.name)}'s body zones</h2>
+      <p style="margin:6px 0 0;color:var(--muted)">${esc(sc.blurb)} Study the briefing first, then play the zone.</p>
+      <ul class="mission-list">
+        ${sc.missions.map((m,i)=>{
+          const r=S.results[m.id];
+          const sys=[...new Set(m.qs.flatMap(qq=>qq.sys||[]))];
+          return `<li class="mcard" style="${mvarM(m)}">
+            <span class="num fill">${m.icon}</span>
+            <span><span class="m-title">${i+1}. ${esc(m.title)}</span><span class="m-sub">${esc(m.sub)} · ${m.qs.length} questions</span>
+              ${r?`<span class="stars" aria-label="${r.stars} of 3 stars"> ${starStr(r.stars)}</span>`:""}
+              ${sysChips(sys)}</span>
+            <span class="m-actions">
+              <button type="button" class="small" data-brief="${m.id}">Study</button>
+              <button type="button" class="small solid fill" data-play="${m.id}">${r?"Replay":"Play"}</button>
+            </span>
+          </li>`;}).join("")}
+      </ul>
+      <div class="map-actions">
+        <button class="secondary" type="button" id="cases">👥 Switch patient</button>
+        <button class="secondary" type="button" id="finish">📊 Medical report</button>
+      </div>
+    </div>
+  </section>`;
+  app.querySelectorAll("[data-brief]").forEach(b=>{ const m=findMission(b.dataset.brief); b.onclick=()=>renderBriefing(m.study,false,m.id); });
+  app.querySelectorAll("[data-play]").forEach(b=>b.onclick=()=>startMission(b.dataset.play));
+  document.getElementById("cases").onclick = renderCases;
+  document.getElementById("finish").onclick = renderReport;
+  window.scrollTo(0,0);
+}
+function findMission(id){ for(const sc of SCENARIOS){ const m=sc.missions.find(x=>x.id===id); if(m) return m; } return null; }
+function scnOf(id){ return SCENARIOS.find(sc=>sc.missions.some(m=>m.id===id)); }
+
+/* =========================================================
+   STUDY BRIEFING
+   ========================================================= */
+function studyHTML(id){
+  const st = STUDY[id]; let h = `<p class="idea">${esc(st.idea)}</p>`;
+  if(st.ladder){
+    h += `<h3>${esc(st.ladderTitle)}</h3><div class="ladder">${st.ladder.map((r,i)=>
+      `<div class="rung fill" style="animation-delay:${i*90}ms;filter:brightness(${1+i*0.07})"><span class="lvl">${esc(r[0])}</span><span>${esc(r[1])}</span><span class="ex">${esc(r[2])}</span></div>`).join("")}</div>`;
+  }
+  if(st.cards){
+    h += `<h3>${esc(st.cardsTitle)}</h3><div class="flip-grid">${st.cards.map(c=>
+      `<button type="button" class="flip" aria-pressed="false" aria-label="${esc(c[0])}. Tap to flip"><span class="inner">
+        <span class="face front fill">${esc(c[0])}<small>tap to flip</small></span>
+        <span class="face back"><b>${esc(c[0])}</b>${esc(c[1])}</span></span></button>`).join("")}</div>`;
+  }
+  if(st.table){
+    const mark = v => v==="yes"?`<span class="yes">✓ Yes</span>`:v==="no"?`<span class="no">✗ No</span>`:esc(v);
+    h += `<h3>${esc(st.table.title)}</h3><div style="overflow-x:auto"><table class="ctable"><thead><tr>${st.table.head.map(x=>`<th>${esc(x)}</th>`).join("")}</tr></thead>
+      <tbody>${st.table.rows.map(r=>`<tr><td>${esc(r[0])}</td><td>${mark(r[1])}</td><td>${mark(r[2])}</td></tr>`).join("")}</tbody></table></div>`;
+  }
+  if(st.chain){
+    h += `<h3>${esc(st.chainTitle)}</h3><ol class="chain">${st.chain.map((c,i)=>
+      `<li style="animation-delay:${i*110}ms"><span class="n fill">${i+1}</span><span>${esc(c)}</span></li>`).join("")}</ol>`;
+  }
+  if(st.systems){
+    h += `<h3>The 7 systems in the standard</h3><div class="sys-grid">${st.systems.map(s=>
+      `<div class="sys" style="--c:${s[1]}"><b>${esc(s[0])}</b><p>${esc(s[2])}</p></div>`).join("")}</div>`;
+  }
+  if(st.cer){
+    h += `<h3>How to build an argument (Claim, Evidence, Reasoning)</h3><div class="cer">${st.cer.map(c=>`<div><b>${esc(c[0])}:</b> ${esc(c[1])}</div>`).join("")}</div>`;
+  }
+  h += st.facts.map(f=>`<div class="fact"><span class="bulb" aria-hidden="true">💡</span><span><b>Did you know?</b>${esc(f)}</span></div>`).join("");
+  h += learnHTML(id);
+  h += srcList(st.src);
+  return h;
+}
+
+function renderBriefing(studyId, guideMode=false, playId=null){
+  if(S) renderVitals();
+  const m = MISSIONS.find(x=>x.id===studyId); const i = MISSIONS.indexOf(m);
+  const playM = playId ? findMission(playId) : (S && S.scn==="jordan" ? m : null);
+  app.innerHTML = `
+  ${guideMode?`<nav class="study-tabs" aria-label="Study guide sections">${MISSIONS.map(x=>
+    `<button type="button" class="fill" style="${mvarM(x)}" data-tab="${x.id}" aria-current="${x.id===studyId}">${ICON[x.id]} ${esc(x.title)}</button>`).join("")}</nav>`:""}
+  <section class="panel study" style="${mvarM(m)}">
+    <div class="banner fill"><h2>${ICON[studyId]} ${esc(m.title)} briefing</h2><span class="tag">S7L2.${m.final?"a–c":m.std}</span></div>
+    <div class="pbody">
+      ${playM && playM.id!==studyId ? `<p class="bridge">Studying for <b>${esc(scnOf(playM.id).name)}: ${esc(playM.title)}</b>. This briefing covers the ideas you'll need.</p>`:""}
+      ${studyHTML(studyId)}
+      <div class="q-actions">
+        ${playM?`<button class="mbtn fill" type="button" id="play">Play ${esc(playM.title)}</button>`:""}
+        ${guideMode && i<MISSIONS.length-1?`<button class="secondary" type="button" id="nextTab">Next topic</button>`:""}
+        <button class="secondary" type="button" id="back">${S && S.scn ? "Back to the body map" : "Back to the patients"}</button>
+      </div>
+    </div>
+  </section>`;
+  app.querySelectorAll(".flip").forEach(f=>f.onclick=()=>f.setAttribute("aria-pressed", f.getAttribute("aria-pressed")==="true"?"false":"true"));
+  app.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>renderBriefing(b.dataset.tab,true));
+  const p=document.getElementById("play"); if(p) p.onclick=()=>startMission(playM.id);
+  const n=document.getElementById("nextTab"); if(n) n.onclick=()=>renderBriefing(MISSIONS[i+1].id,true);
+  document.getElementById("back").onclick = S ? (S.scn ? renderMap : renderCases) : renderStart;
+  window.scrollTo(0,0);
+}
+
+/* =========================================================
+   MISSION / QUESTIONS
+   ========================================================= */
+let M = null;
+function startMission(id){ const m=findMission(id); S.scn = scnOf(id).id; M = { mission:m, idx:0, marks:[], fixed:[] }; renderQuestion(); }
+
+function renderQuestion(){
+  renderVitals();
+  const {mission, idx} = M;
+  const q = mission.qs[idx];
+  const team = S.teams[S.turn];
+  const std = q.std || mission.std;
+  M.q = { q, std, hintUsed:false, answered:false, status:null, tries:0, selected:new Set(), struck:new Set(), seq:[],
+          order: q.t==="order" ? shuffledOrder(q.o.length) : shuffle([...q.o.keys()]) };
+  app.innerHTML = `
+  <section class="panel" id="qcard" style="${mvarM(mission)}" aria-live="polite">
+    <div class="banner fill"><h2>${mission.icon} ${esc(curScn().name)}: ${esc(mission.title)}</h2><span class="tag">Question ${idx+1} of ${mission.qs.length} · S7L2.${std}</span></div>
+    <div class="pbody">
+      <div class="progress">${mission.qs.map((_,i)=>`<span class="${M.marks[i]===true?"ok":M.marks[i]===false?(M.fixed[i]?"re":"no"):i===idx?"now":""}"></span>`).join("")}</div>
+      ${S.mode==="teams"?`<div class="turn fill">${esc(team.name)}, you're up!</div>`:""}
+      ${q.sys && q.sys.length ? sysChips(q.sys) : ""}
+      <p class="qtext">${esc(q.q)}</p>
+      <div id="qbody"></div>
+      <div class="q-actions" id="qactions"></div>
+      <div id="fb"></div>
+    </div>
+  </section>`;
+  drawBody(); drawActions();
+  window.scrollTo(0,0);
+}
+
+function drawBody(){
+  const {q} = M.q; const body = document.getElementById("qbody");
+  if(q.t==="order"){
+    const placed = M.q.seq;
+    body.innerHTML = `
+      <ol class="order-slots">
+        ${q.o.map((_,i)=>{
+          const item = placed[i];
+          let cls = "";
+          if(M.q.answered && item!==undefined) cls = item===i ? "correct" : "wrong";
+          return `<li class="${cls}">${item!==undefined
+            ? `<button type="button" data-remove="${i}" ${M.q.answered?"disabled":""} aria-label="Remove ${esc(q.o[item])}">${esc(q.o[item])}</button>`
+            : `<span style="color:var(--muted)">Tap a step below</span>`}</li>`;}).join("")}
+      </ol>
+      ${M.q.answered?"":`<p class="pool-label">Steps to place:</p>
+      <div class="options">
+        ${M.q.order.filter(i=>!placed.includes(i)).map(i=>`<button type="button" class="opt" data-add="${i}"><span>${esc(q.o[i])}</span></button>`).join("")}
+      </div>`}`;
+    body.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>{ M.q.seq.push(+b.dataset.add); drawBody(); drawActions(); });
+    body.querySelectorAll("[data-remove]").forEach(b=>b.onclick=()=>{ M.q.seq.splice(+b.dataset.remove,1); drawBody(); drawActions(); });
+  } else {
+    const isMulti = q.t==="multi";
+    const correctSet = new Set(isMulti ? q.a : [q.a]);
+    body.innerHTML = `<div class="options" role="group">
+      ${M.q.order.map((oi,k)=>{
+        let cls="opt";
+        if(M.q.struck.has(oi)) cls+=" struck";
+        if(M.q.answered){ const rev = M.q.status==="correct"||M.q.status==="revealed";
+          if(rev && correctSet.has(oi)) cls+=" correct"; else if(M.q.selected.has(oi)) cls += correctSet.has(oi) ? " correct" : " wrong"; }
+        const pressed = isMulti ? `aria-pressed="${M.q.selected.has(oi)}"` : "";
+        const dis = (M.q.answered || M.q.struck.has(oi)) ? "disabled" : "";
+        return `<button type="button" class="${cls}" data-o="${oi}" ${pressed} ${dis}><span class="key fill">${letters[k]}</span><span>${esc(q.o[oi])}</span></button>`;
+      }).join("")}</div>`;
+    body.querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>{
+      const oi = +b.dataset.o;
+      if(isMulti){
+        if(M.q.selected.has(oi)) M.q.selected.delete(oi);
+        else if(M.q.selected.size < q.n) M.q.selected.add(oi);
+        drawBody(); drawActions();
+      } else { M.q.selected = new Set([oi]); submit(); }
+    });
+  }
+}
+
+function drawActions(){
+  const {q} = M.q; const el = document.getElementById("qactions");
+  if(M.q.answered){ el.innerHTML=""; return; }
+  let submitBtn = "";
+  if(q.t==="multi") submitBtn = `<button class="mbtn fill" type="button" id="submit" ${M.q.selected.size===q.n?"":"disabled"}>Check answer</button>`;
+  if(q.t==="order") submitBtn = `<button class="mbtn fill" type="button" id="submit" ${M.q.seq.length===q.o.length?"":"disabled"}>Check order</button>
+    <button class="secondary" type="button" id="clear" ${M.q.seq.length?"":"disabled"}>Clear</button>`;
+  el.innerHTML = `${submitBtn}<button class="secondary" type="button" id="hint" ${M.q.hintUsed?"disabled":""}>${M.q.hintUsed?"Nurse already helped":"🩹 Ask the nurse (−50)"}</button>`;
+  const s=document.getElementById("submit"); if(s) s.onclick=submit;
+  const c=document.getElementById("clear"); if(c) c.onclick=()=>{ M.q.seq=[]; drawBody(); drawActions(); };
+  document.getElementById("hint").onclick = useHint;
+}
+
+function useHint(){
+  const {q} = M.q; M.q.hintUsed = true;
+  if(q.t==="order"){
+    let k=0; while(k<M.q.seq.length && M.q.seq[k]===k) k++;
+    M.q.seq = [...Array(Math.min(k+1,q.o.length)).keys()];
+  } else {
+    const correct = new Set(q.t==="multi"?q.a:[q.a]);
+    const wrongs = [...q.o.keys()].filter(i=>!correct.has(i) && !M.q.struck.has(i));
+    if(wrongs.length){ const w = wrongs[Math.floor(Math.random()*wrongs.length)]; M.q.struck.add(w); M.q.selected.delete(w); }
+  }
+  drawBody(); drawActions();
+}
+
+function evaluate(q){
+  if(q.t==="order"){ const k=M.q.seq.filter((v,i)=>v===i).length, n=q.o.length; return {ok:k===n, close:k<n && k>=Math.ceil(n*0.6), k, n}; }
+  if(q.t==="multi"){ const hits=q.a.filter(i=>M.q.selected.has(i)).length; return {ok:hits===q.a.length && M.q.selected.size===q.a.length, close:hits>0 && hits<q.a.length, k:hits, n:q.a.length}; }
+  return {ok:M.q.selected.has(q.a), close:false};
+}
+
+/* big emoji pop for each outcome */
+function celebrate(kind){
+  const fx=document.getElementById("fx");
+  const pick = a => a[Math.floor(Math.random()*a.length)];
+  const em = kind==="correct" ? pick(["🎉","🧬","🫀","💪","🔬","⭐","🧠","🏆"]) : kind==="close" ? pick(["🤏","🔥","👀"]) : pick(["💡","🌱","📖"]);
+  const b=document.createElement("div"); b.className="burst "+kind; b.textContent=em; b.setAttribute("aria-hidden","true");
+  fx.appendChild(b); setTimeout(()=>b.remove(), REDUCED?600:1500);
+}
+
+/* reading notes pulled from the verified study briefings */
+function allCards(){ const out=[]; Object.keys(STUDY).forEach(k=>(STUDY[k].cards||[]).forEach(c=>out.push({topic:k, term:c[0], def:c[1]}))); return out; }
+function readingFor(q, mission){
+  const text = (q.q+" "+q.o.join(" ")).toLowerCase();
+  const hits=[]; const seen=new Set();
+  const cards = allCards().sort((a,b)=>(b.topic===mission.study)-(a.topic===mission.study));
+  for(const c of cards){
+    if(seen.has(c.term)) continue;
+    const keys=c.term.toLowerCase().split(/\s*&\s*|,\s*/).flatMap(k=>k.endsWith("s")&&k.length>4?[k,k.slice(0,-1)]:[k]);
+    if(keys.some(k=>k.length>2 && text.includes(k))){ hits.push(c); seen.add(c.term); }
+    if(hits.length>=4) break;
+  }
+  const st = STUDY[mission.study];
+  let h = `<div class="reading"><h4>📖 Read this, then try again</h4>`;
+  if(hits.length){
+    h += `<p class="rd-intro">Here's what these words mean. Use them to rethink your answer.</p><dl>${hits.map(c=>`<dt>${esc(c.term)}</dt><dd>${esc(c.def)}</dd>`).join("")}</dl>`;
+  } else {
+    h += `<p class="rd-intro"><b>Big idea:</b> ${esc(st.idea)}</p>`;
+    if(st.chain) h += `<ol class="rd-chain">${st.chain.map(c=>`<li>${esc(c)}</li>`).join("")}</ol>`;
+  }
+  const lk = (LEARN[mission.study]||[])[0];
+  h += `<p class="rd-links"><button type="button" class="link-btn" id="openBrief">Open the full ${esc(MISSIONS.find(x=>x.id===mission.study).title)} briefing</button>${lk?` · <a href="${LINKS[lk].u}" target="_blank" rel="noopener">${esc(LINKS[lk].t)} (${esc(LINKS[lk].site)})</a>`:""}</p></div>`;
+  return h;
+}
+
+function submit(){
+  const {q, std} = M.q;
+  const ev = evaluate(q);
+  M.q.tries++; const first = M.q.tries===1;
+  M.q.answered = true;
+  const team = S.teams[S.turn];
+  let pts = 0;
+  if(ev.ok){
+    M.q.status="correct";
+    if(first){ team.streak++; pts = (M.q.hintUsed?50:100) + Math.min(80, 20*(team.streak-1)); S.health[S.scn] = Math.min(100, S.health[S.scn] + (curScn().full?3:5)); }
+    else { pts = 40; S.health[S.scn] = Math.min(100, S.health[S.scn] + 1); M.fixed[M.idx]=true; }
+    team.score += pts;
+  } else {
+    M.q.status = ev.close ? "close" : "wrong";
+    if(first){ team.streak = 0; S.health[S.scn] = Math.max(0, S.health[S.scn] - 1); }
+  }
+  if(first){ S.std[std][1]++; if(ev.ok) S.std[std][0]++; (q.sys||[]).forEach(k=>{ S.sys[k][1]++; if(ev.ok) S.sys[k][0]++; }); M.marks[M.idx] = ev.ok; }
+  save();
+
+  drawBody(); drawActions(); renderVitals(ev.ok?S.turn:undefined);
+  const card=document.getElementById("qcard");
+  celebrate(M.q.status);
+  if(ev.ok) confetti(document.querySelector(".opt.correct, .order-slots") || card, team.streak>2?50:32);
+  else if(!REDUCED){ const cls = ev.close?"wobble":"shake"; card.classList.remove("shake","wobble"); void card.offsetWidth; card.classList.add(cls); }
+  showFeedback(ev, pts, first);
+}
+
+function showFeedback(ev, pts, first){
+  const q = M.q.q; const team = S.teams[S.turn];
+  const last = M.idx === M.mission.qs.length-1;
+  const pick = a => a[Math.floor(Math.random()*a.length)];
+  const fb = document.getElementById("fb");
+  if(M.q.status==="correct" || M.q.status==="revealed"){
+    const correctOrder = (M.q.status==="revealed" && q.t==="order") ? `<p><strong>Correct order:</strong></p><ol class="correct-order">${q.o.map(s=>`<li>${esc(s)}</li>`).join("")}</ol>` : "";
+    const head = M.q.status==="revealed" ? "🩺 Here's the answer. Read it carefully:" :
+      first ? "✅ "+pick(["Nice diagnosis!","Vitals improving!","Textbook answer!","They felt that one!","Crushed it!","Doctor-level move!"]) :
+      "✅ "+pick(["You got it! Great comeback! 💪","That's the scientist spirit!","Persistence pays off!"]);
+    const streakNote = first && team.streak>1 ? ` 🔥 ${team.streak}-answer streak!` : "";
+    fb.innerHTML = `
+      <div class="feedback ${M.q.status==="revealed"?"reveal":"good"}">
+        <h3>${head}</h3>
+        ${pts?`<p><span class="pts">+${pts} points</span> for ${esc(team.name)}.${streakNote}</p>`:""}
+        <p>${esc(q.e)}</p>
+        ${correctOrder}
+        ${srcLine(q)}
+      </div>
+      <div class="q-actions"><button class="mbtn fill" type="button" id="next">${last?"Finish this zone":"Next question"}</button></div>`;
+    const nb = document.getElementById("next"); nb.focus({preventScroll:true});
+    nb.onclick = ()=>{
+      if(S.mode==="teams") S.turn = (S.turn+1) % S.teams.length;
+      if(last) finishMission(); else { M.idx++; renderQuestion(); }
+      renderVitals();
+    };
+  } else {
+    const close = M.q.status==="close";
+    const head = close ? pick(["🤏 So close!","🔥 Almost there!","👀 You're on the right track!","🤏 Nearly got it!"])
+                       : pick(["💡 Not yet, but you've got this!","🌱 Good try! Let's learn it.","💡 Every scientist gets it wrong first.","🌱 Mistakes help your brain grow."]);
+    let sub;
+    if(close && q.t==="order") sub = `You have <b>${ev.k} of ${ev.n}</b> steps in the right spot (they're green). Read the notes, then try again.`;
+    else if(close && q.t==="multi") sub = `One of your picks is right (it's green). Rethink the other one.`;
+    else if(q.t==="order") sub = `The green steps are in the right spot. Read the notes below, then give it another shot.`;
+    else sub = `Read the notes below, then give it another shot. You can try as many times as you need.`;
+    fb.innerHTML = `
+      <div class="feedback ${close?"close":"bad"}">
+        <h3>${head}</h3>
+        <p>${sub}</p>
+        ${readingFor(q, M.mission)}
+      </div>
+      <div class="q-actions">
+        <button class="mbtn fill" type="button" id="retry">🔁 Try again</button>
+        ${M.q.tries>=2?`<button class="secondary" type="button" id="reveal">Show me the answer</button>`:""}
+      </div>`;
+    document.getElementById("retry").onclick = retry;
+    const rv=document.getElementById("reveal"); if(rv) rv.onclick = ()=>{ M.q.status="revealed"; if(q.t!=="order") M.q.selected=new Set(); drawBody(); showFeedback(ev,0,false); };
+    document.getElementById("openBrief").onclick = ()=>openBriefDialog(M.mission.study);
+    document.getElementById("retry").focus({preventScroll:true});
+  }
+  fb.scrollIntoView({behavior:REDUCED?"auto":"smooth",block:"nearest"});
+}
+
+function retry(){
+  const q=M.q.q;
+  M.q.answered=false; M.q.status=null; M.q.selected=new Set(); M.q.seq=[];
+  M.q.order = q.t==="order" ? shuffledOrder(q.o.length) : shuffle([...q.o.keys()]);
+  document.getElementById("fb").innerHTML="";
+  drawBody(); drawActions();
+  document.getElementById("qcard").scrollIntoView({behavior:REDUCED?"auto":"smooth",block:"start"});
+}
+
+/* briefing in a pop-up, so students don't lose their place */
+function openBriefDialog(topic){
+  const d=document.getElementById("briefDlg"); const m=MISSIONS.find(x=>x.id===topic);
+  d.style.cssText = mvarM(m);
+  d.querySelector(".bd-body").innerHTML = `<div class="banner fill"><h2>${ICON[topic]} ${esc(m.title)} briefing</h2></div><div class="pbody study">${studyHTML(topic)}</div>`;
+  d.querySelectorAll(".flip").forEach(f=>f.onclick=()=>f.setAttribute("aria-pressed", f.getAttribute("aria-pressed")==="true"?"false":"true"));
+  if(d.showModal) d.showModal(); else d.setAttribute("open","");
+}
+
+function finishMission(){
+  const sc = curScn();
+  const correct = M.marks.filter(Boolean).length, total = M.mission.qs.length;
+  const stars = starsFor(correct/total);
+  const prev = S.results[M.mission.id];
+  if(!prev || stars >= prev.stars) S.results[M.mission.id] = {correct,total,stars};
+  const fixedN = M.fixed.filter(Boolean).length; save();
+  const caseDone = sc.missions.every(m=>S.results[m.id]);
+  const msg = stars===3 ? "System stabilized!" : stars===2 ? "Good progress!" : "Needs another look";
+  app.innerHTML = `
+  <section class="result" style="${mvarM(M.mission)}">
+    <h2>${msg}</h2>
+    <div class="big-stars" aria-label="${stars} of 3 stars">${[0,1,2].map(i=>`<span class="${i<stars?"on":""}" style="animation-delay:${200+i*250}ms">★</span>`).join("")}</div>
+    <p style="font-size:1.25rem">${M.mission.icon} ${esc(sc.name)}: ${esc(M.mission.title)} · <strong>${correct} of ${total}</strong> right on the first try</p>
+    ${fixedN?`<p>💪 You fixed ${fixedN} more by trying again. That's how scientists learn!</p>`:""}
+    ${caseDone?`<p style="font-size:1.1rem">🎉 You finished every zone in ${esc(sc.name)}'s case!</p>`:""}
+    ${stars<3?`<p style="color:var(--muted)">Review the briefing, then replay to raise your stars. Your best run is kept.</p>`:""}
+    <div class="q-actions" style="justify-content:center">
+      <button class="primary" type="button" id="back">${caseDone?"Choose another patient":"Back to the body map"}</button>
+      ${stars<3?`<button class="secondary" type="button" id="study">Review the briefing</button>`:""}
+      <button class="secondary" type="button" id="again">Replay this zone</button>
+    </div>
+  </section>`;
+  if(stars>=2) setTimeout(()=>confetti(document.querySelector(".big-stars"), stars===3?60:30), 700);
+  document.getElementById("back").onclick = caseDone ? renderCases : renderMap;
+  document.getElementById("again").onclick = ()=>startMission(M.mission.id);
+  const st=document.getElementById("study"); if(st) st.onclick=()=>renderBriefing(M.mission.study,false,M.mission.id);
+  document.getElementById("back").focus();
+}
+
+/* =========================================================
+   REPORT
+   ========================================================= */
+function renderReport(){
+  renderVitals();
+  const labels = {a:"S7L2.a Cell structures", b:"S7L2.b Levels of organization", c:"S7L2.c Systems interacting"};
+  const colors = {a:"var(--violet)", b:"var(--teal)", c:"var(--rose)"};
+  const review = {a:"Review the Cell Lab briefing.", b:"Review the Build-a-Body briefing.", c:"Review the Full-Body Scan briefing, then try another patient."};
+  const sysReview = {CV:"fuel", RE:"air", DI:"fuel", EX:"clean", MU:"brain", NE:"brain", IM:"clean"};
+  const ranked = S.teams.slice().sort((x,y)=>y.score-x.score);
+  const row = (label,color,[c,t],note) => { const pct = t? Math.round(100*c/t) : 0;
+    return `<div class="row" style="--m:${color}"><div class="row-top"><span>${label}</span><span>${t?`${c}/${t} (${pct}%)`:"—"}</span></div>
+      <div class="bar"><div style="width:${pct}%"></div></div><p>${!t ? "Not practiced yet." : pct>=80 ? "Strong. You're ready on this part." : note}</p></div>`; };
+  app.innerHTML = `
+  <section class="result">
+    <h2>Medical report</h2>
+    <div class="podium">${ranked.map((t,i)=>`<span class="chip ${i===0?"active fill":""}">${i===0 && S.mode==="teams"?"🏆 ":""}${esc(t.name)} · ${t.score}</span>`).join("")}</div>
+    <div class="podium">${SCENARIOS.map(sc=>{ const d=sc.missions.filter(m=>S.results[m.id]).length;
+      return `<span class="chip">${sc.emoji} ${esc(sc.name)}: ${d}/${sc.missions.length} zones · ${condition(S.health[sc.id])}</span>`;}).join("")}</div>
+  </section>
+  <div class="report">
+    <p style="color:var(--muted);margin:0">Scores count first tries only, so they show what you knew before hints or retries.</p>
+    <h3 class="rep-h">By standard</h3>
+    ${["a","b","c"].map(k=>row(labels[k],colors[k],S.std[k],`Keep practicing. ${review[k]}`)).join("")}
+    <h3 class="rep-h">By body system</h3>
+    ${Object.keys(SYS).map(k=>row(SYS[k]+" system",SYSCOLOR[k],S.sys[k],`Keep practicing. Review the ${MISSIONS.find(m=>m.id===sysReview[k]).title} briefing.`)).join("")}
+  </div>
+  <div class="q-actions" style="justify-content:center;margin-top:20px">
+    <button class="primary" type="button" id="copyRes">📋 Copy my results for my teacher</button>
+    <button class="secondary" type="button" id="toCases">Choose a patient</button>
+    <button class="secondary" type="button" id="guide">📖 Study guide</button>
+    <button class="secondary" type="button" id="newGame">New game</button>
+  </div>`;
+  const allDone = SCENARIOS.every(sc=>sc.missions.every(m=>S.results[m.id]));
+  if(allDone) setTimeout(()=>confetti(document.querySelector(".result h2"),70),300);
+  document.getElementById("toCases").onclick = renderCases;
+  document.getElementById("copyRes").onclick = showResultsText;
+  document.getElementById("guide").onclick = ()=>renderBriefing("cell",true);
+  document.getElementById("newGame").onclick = renderStart;
+  window.scrollTo(0,0);
+}
+
+
+/* =========================================================
+   RESULTS SUMMARY (students paste into LMS / Google Form)
+   ========================================================= */
+function resultsText(){
+  const pct = ([c,t]) => t ? `${c}/${t} (${Math.round(100*c/t)}%)` : "not practiced";
+  const L=[];
+  L.push(`Micro Medics results: ${S.teams.map(x=>x.name).join(", ")}`);
+  L.push(`Date: ${new Date().toLocaleDateString()}`);
+  L.push(`Mode: ${S.mode==="teams"?"Class teams":"Solo"}  |  Points: ${S.teams.map(x=>`${x.name} ${x.score}`).join(", ")}`);
+  L.push("");
+  L.push("Zones finished (stars, first-try score):");
+  SCENARIOS.forEach(sc=>{ const done=sc.missions.filter(m=>S.results[m.id]);
+    L.push(`  ${sc.title}: ${done.length}/${sc.missions.length}` + (done.length?` — ${done.map(m=>`${m.title} ${"★".repeat(S.results[m.id].stars)} ${S.results[m.id].correct}/${S.results[m.id].total}`).join("; ")}`:"")); });
+  L.push("");
+  L.push("First-try accuracy by standard:");
+  L.push(`  S7L2.a Cell structures: ${pct(S.std.a)}`);
+  L.push(`  S7L2.b Levels of organization: ${pct(S.std.b)}`);
+  L.push(`  S7L2.c Systems interacting: ${pct(S.std.c)}`);
+  L.push("First-try accuracy by body system:");
+  Object.keys(SYS).forEach(k=>L.push(`  ${SYS[k]}: ${pct(S.sys[k])}`));
+  if(S.lightning && S.lightning.best) L.push(`Lightning Round best: ${S.lightning.best} correct`);
+  return L.join("\n");
+}
+function showResultsText(){
+  const txt = resultsText();
+  const box = document.getElementById("resBox") || (()=>{ const d=document.createElement("div"); d.id="resBox"; d.className="resbox"; document.querySelector(".report").before(d); return d; })();
+  box.innerHTML = `<p><b>Your results are ready.</b> Paste them wherever your teacher asks (like a Google Form or your class page).</p>
+    <textarea readonly rows="12" aria-label="Your results">${esc(txt)}</textarea>
+    <p id="copyMsg" class="srcline"></p>`;
+  const ta = box.querySelector("textarea"); ta.focus(); ta.select();
+  const msg = document.getElementById("copyMsg");
+  const done = ok => msg.textContent = ok ? "✅ Copied! Now paste it (Ctrl+V or Cmd+V)." : "Select all the text above and copy it (Ctrl+C or Cmd+C).";
+  try{ navigator.clipboard.writeText(txt).then(()=>done(true), ()=>{ try{ done(document.execCommand("copy")); }catch(e){ done(false); } }); }
+  catch(e){ try{ done(document.execCommand("copy")); }catch(e2){ done(false); } }
+  box.scrollIntoView({behavior:REDUCED?"auto":"smooth", block:"center"});
+}
+
+/* =========================================================
+   VOCABULARY SHEET (printable)
+   ========================================================= */
+function renderVocab(){
+  if(S) renderVitals();
+  app.innerHTML = `
+  <section class="teacher vocab">
+    <div class="no-print q-actions" style="justify-content:space-between">
+      <button class="secondary" type="button" id="vBack">← Back</button>
+      <button class="primary" type="button" id="vPrint">🖨️ Print or save as PDF</button>
+    </div>
+    <p class="no-print" style="color:var(--muted)">If the print button doesn't open, press Ctrl+P or Cmd+P.</p>
+    <h2>Micro Medics Vocabulary Sheet</h2>
+    <p>Georgia Standards of Excellence S7L2: cells, tissues, organs, and body systems.</p>
+    <h3>Levels of organization (smallest to largest)</h3>
+    <table class="ctable"><thead><tr><th>Level</th><th>What it is</th><th>Example</th></tr></thead>
+      <tbody>${STUDY.org.ladder.map(r=>`<tr><td><b>${esc(r[0])}</b></td><td>${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`).join("")}</tbody></table>
+    ${MISSIONS.filter(m=>STUDY[m.id].cards).map(m=>`
+      <h3>${ICON[m.id]} ${esc(m.title)}</h3>
+      <table class="ctable"><tbody>${STUDY[m.id].cards.map(c=>`<tr><td class="vterm"><b>${esc(c[0])}</b></td><td>${esc(c[1])}</td></tr>`).join("")}</tbody></table>`).join("")}
+    <h3>🩺 The 7 body systems in the standard</h3>
+    <table class="ctable"><tbody>${STUDY.final.systems.map(s=>`<tr><td class="vterm"><b>${esc(s[0])}</b></td><td>${esc(s[2])}</td></tr>`).join("")}</tbody></table>
+    <h3>Building an argument: Claim, Evidence, Reasoning</h3>
+    <table class="ctable"><tbody>${STUDY.final.cer.map(c=>`<tr><td class="vterm"><b>${esc(c[0])}</b></td><td>${esc(c[1])}</td></tr>`).join("")}</tbody></table>
+    <p class="srcline">Definitions checked against OpenStax Biology 2e and Anatomy & Physiology 2e (openstax.org) and NIH/NIDDK.</p>
+  </section>`;
+  document.getElementById("vBack").onclick = S ? (S.scn ? renderMap : renderCases) : renderStart;
+  document.getElementById("vPrint").onclick = ()=>{ try{ window.print(); }catch(e){} };
+  window.scrollTo(0,0);
+}
+
+/* =========================================================
+   LIGHTNING ROUND (timed review)
+   ========================================================= */
+let LR = null;
+const LR_SECONDS = 90;
+function lrPool(){ const all=[]; SCENARIOS.forEach(sc=>sc.missions.forEach(m=>m.qs.forEach(q=>{ if(q.t!=="order") all.push({q, m, sc}); }))); return shuffle(all); }
+function renderLightningIntro(){
+  if(!S.lightning) S.lightning = {best:0};
+  S.scn = null; renderVitals();
+  const teams = S.mode==="teams";
+  app.innerHTML = `
+  <section class="panel" style="--m:var(--amber)">
+    <div class="banner fill"><h2>⚡ Lightning Round</h2><span class="tag">${LR_SECONDS} seconds</span></div>
+    <div class="pbody">
+      <p class="idea">Answer as many questions as you can before time runs out. Questions come from all four patients and all 7 body systems.</p>
+      <ul class="lr-rules">
+        <li>✅ Correct: +100 points, plus a speed bonus</li>
+        <li>❌ Wrong: no penalty, and you'll see the right answer for a moment</li>
+        <li>📖 At the end, you'll review every question you missed</li>
+        ${teams?`<li>👥 Each team gets its own round. Highest score wins!</li>`:""}
+      </ul>
+      ${S.lightning.best?`<p>🏅 Best so far on this device: <b>${S.lightning.best} correct</b></p>`:""}
+      <div class="q-actions">
+        <button class="mbtn fill" type="button" id="lrGo">${teams?`Start: ${esc(S.teams[0].name)}`:"Start the clock!"}</button>
+        <button class="secondary" type="button" id="lrBack">Back to the patients</button>
+      </div>
+    </div>
+  </section>`;
+  document.getElementById("lrGo").onclick = ()=>{ LR = {teamIdx:0, results:[]}; startLightning(); };
+  document.getElementById("lrBack").onclick = renderCases;
+  window.scrollTo(0,0);
+}
+function startLightning(){
+  Object.assign(LR, {pool:lrPool(), i:0, correct:0, pts:0, missed:[], end:Date.now()+LR_SECONDS*1000, locked:false});
+  clearInterval(LR.timer);
+  LR.timer = setInterval(tickLightning, 250);
+  drawLightningQ();
+}
+function tickLightning(){
+  const left = Math.max(0, LR.end - Date.now());
+  const bar = document.getElementById("lrBar"), num = document.getElementById("lrNum");
+  if(bar) bar.style.width = (100*left/(LR_SECONDS*1000))+"%";
+  if(num) num.textContent = Math.ceil(left/1000);
+  if(bar) bar.classList.toggle("hurry", left < 15000);
+  if(left<=0){ clearInterval(LR.timer); finishLightning(); }
+}
+function drawLightningQ(){
+  if(LR.i >= LR.pool.length) LR.pool = LR.pool.concat(lrPool());
+  const {q, m, sc} = LR.pool[LR.i];
+  LR.cur = {q, order:shuffle([...q.o.keys()]), sel:new Set(), start:Date.now()};
+  const team = S.mode==="teams" ? S.teams[LR.teamIdx].name : null;
+  app.innerHTML = `
+  <section class="panel lr" style="--m:var(--amber)">
+    <div class="banner fill"><h2>⚡ ${team?esc(team)+": ":""}${LR.correct} correct</h2><span class="tag lr-clock"><span id="lrNum">${LR_SECONDS}</span>s</span></div>
+    <div class="lr-track"><div id="lrBar"></div></div>
+    <div class="pbody">
+      <p class="lr-from">${sc.emoji} ${esc(sc.name)} · ${esc(m.title)} ${q.sys&&q.sys.length?sysChips(q.sys):""}</p>
+      <p class="qtext">${esc(q.q)}</p>
+      <div class="options">${LR.cur.order.map((oi,k)=>`<button type="button" class="opt" data-o="${oi}" ${q.t==="multi"?'aria-pressed="false"':""}><span class="key fill">${letters[k]}</span><span>${esc(q.o[oi])}</span></button>`).join("")}</div>
+      ${q.t==="multi"?`<div class="q-actions"><button class="mbtn fill" type="button" id="lrSubmit" disabled>Check (pick ${q.n})</button></div>`:""}
+      <div id="lrFlash" aria-live="polite"></div>
+    </div>
+  </section>`;
+  tickLightning();
+  app.querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>{
+    if(LR.locked) return;
+    const oi=+b.dataset.o;
+    if(q.t==="multi"){
+      if(LR.cur.sel.has(oi)) LR.cur.sel.delete(oi); else if(LR.cur.sel.size<q.n) LR.cur.sel.add(oi);
+      app.querySelectorAll("[data-o]").forEach(x=>x.setAttribute("aria-pressed", LR.cur.sel.has(+x.dataset.o)));
+      document.getElementById("lrSubmit").disabled = LR.cur.sel.size!==q.n;
+    } else { LR.cur.sel=new Set([oi]); answerLightning(); }
+  });
+  const sb=document.getElementById("lrSubmit"); if(sb) sb.onclick=answerLightning;
+}
+function answerLightning(){
+  if(LR.locked) return; LR.locked = true;
+  const {q, sel} = LR.cur;
+  const ans = new Set(q.t==="multi"?q.a:[q.a]);
+  const ok = sel.size===ans.size && [...sel].every(i=>ans.has(i));
+  app.querySelectorAll("[data-o]").forEach(b=>{ const oi=+b.dataset.o; b.disabled=true;
+    if(ans.has(oi)) b.classList.add("correct"); else if(sel.has(oi)) b.classList.add("wrong"); });
+  const flash = document.getElementById("lrFlash");
+  if(ok){
+    const secs=(Date.now()-LR.cur.start)/1000; const bonus = Math.max(0, Math.round(50 - secs*5));
+    LR.correct++; LR.pts += 100 + bonus;
+    flash.innerHTML = `<p class="lr-good">✅ +${100+bonus}${bonus?` (speed bonus +${bonus})`:""}</p>`;
+    confetti(app.querySelector(".opt.correct"), 18);
+  } else {
+    LR.missed.push(q);
+    flash.innerHTML = `<p class="lr-bad">Not this time. The answer is highlighted in green.</p>`;
+  }
+  setTimeout(()=>{ LR.locked=false; if(Date.now() < LR.end){ LR.i++; drawLightningQ(); } }, ok?700:1600);
+}
+function finishLightning(){
+  clearInterval(LR.timer); LR.locked = true;
+  const who = S.mode==="teams" ? S.teams[LR.teamIdx] : S.teams[0];
+  LR.results.push({name:who.name, correct:LR.correct, pts:LR.pts});
+  who.score += LR.pts;
+  S.lightning.best = Math.max(S.lightning.best||0, LR.correct); save();
+  const moreTeams = S.mode==="teams" && LR.teamIdx < S.teams.length-1;
+  const board = LR.results.slice().sort((a,b)=>b.pts-a.pts);
+  app.innerHTML = `
+  <section class="result" style="--m:var(--amber)">
+    <h2>⏰ Time!</h2>
+    <p style="font-size:1.3rem">${esc(who.name)}: <b>${LR.correct} correct</b> · ${LR.pts} points</p>
+    ${LR.results.length>1?`<div class="podium">${board.map((r,i)=>`<span class="chip ${i===0?"active fill":""}">${i===0?"🏆 ":""}${esc(r.name)}: ${r.correct} correct · ${r.pts}</span>`).join("")}</div>`:""}
+    <div class="q-actions" style="justify-content:center">
+      ${moreTeams?`<button class="primary" type="button" id="lrNext">Next up: ${esc(S.teams[LR.teamIdx+1].name)}</button>`:
+        `<button class="primary" type="button" id="lrAgain">Play another round</button>`}
+      <button class="secondary" type="button" id="lrDone">Back to the patients</button>
+    </div>
+  </section>
+  ${LR.missed.length?`<div class="report"><h3 class="rep-h">📖 Review what you missed</h3>${LR.missed.map(q=>`
+    <div class="row" style="--m:var(--amber)"><p style="color:var(--ink);margin:0"><b>${esc(q.q)}</b></p>
+    <p style="color:var(--good);font-weight:700">Answer: ${q.t==="multi"?q.a.map(i=>esc(q.o[i])).join(" + "):esc(q.o[q.a])}</p><p>${esc(q.e)}</p></div>`).join("")}</div>`:""}`;
+  if(LR.correct>=5) setTimeout(()=>confetti(document.querySelector(".result h2"), 50), 300);
+  const nx=document.getElementById("lrNext"); if(nx) nx.onclick=()=>{ LR.teamIdx++; startLightning(); };
+  const ag=document.getElementById("lrAgain"); if(ag) ag.onclick=renderLightningIntro;
+  document.getElementById("lrDone").onclick = renderCases;
+  renderVitals();
+  window.scrollTo(0,0);
+}
+
+/* ---------- standards dialog + coverage table ---------- */
+function coverageHTML(){
+  const cvs = SCENARIOS.map(coverage);
+  return `<div style="overflow-x:auto"><table class="ctable cov"><thead><tr><th>Practiced</th>${SCENARIOS.map(sc=>`<th>${sc.emoji} ${esc(sc.name)}</th>`).join("")}</tr></thead><tbody>
+    <tr><td>S7L2.a Cell structures</td>${cvs.map(c=>`<td>${c.std.a}</td>`).join("")}</tr>
+    <tr><td>S7L2.b Levels of organization</td>${cvs.map(c=>`<td>${c.std.b}</td>`).join("")}</tr>
+    ${Object.keys(SYS).map(k=>`<tr><td>${SYS[k]}</td>${cvs.map(c=>`<td class="${c.sys[k]?"yes":"no"}">${c.sys[k]}</td>`).join("")}</tr>`).join("")}
+    <tr><td><b>Total questions</b></td>${cvs.map(c=>`<td><b>${c.n}</b></td>`).join("")}</tr>
+  </tbody></table></div><p style="color:var(--muted);font-size:.9rem;margin:6px 0 0">Numbers show how many questions practice each item. Many questions practice more than one system, because S7L2.c is about systems interacting.</p>`;
+}
+function renderCoverage(){ const el=document.getElementById("coverage"); if(el) el.innerHTML = coverageHTML(); }
+
+function answerText(q){
+  if(q.t==="mc") return esc(q.o[q.a]);
+  if(q.t==="multi") return q.a.map(i=>esc(q.o[i])).join("<br>+ ");
+  return `<ol class="ak-ol">${q.o.map(s=>`<li>${esc(s)}</li>`).join("")}</ol>`;
+}
+
+/* =========================================================
+   TEACHER PASSWORD
+   To change the password: unlock the answer key, use "Change password",
+   and paste the new line it gives you over the line below.
+   ========================================================= */
+const TEACHER_KEY_HASH = "p9rt5yyrv7";
+function khash(str, seed=7){ // cyrb53: fast string hash (keeps the password out of the page text)
+  let h1=0xdeadbeef^seed, h2=0x41c6ce57^seed;
+  for(let i=0,ch;i<str.length;i++){ ch=str.charCodeAt(i); h1=Math.imul(h1^ch,2654435761); h2=Math.imul(h2^ch,1597334677); }
+  h1=Math.imul(h1^(h1>>>16),2246822507); h1^=Math.imul(h2^(h2>>>13),3266489909);
+  h2=Math.imul(h2^(h2>>>16),2246822507); h2^=Math.imul(h1^(h1>>>13),3266489909);
+  return (4294967296*(2097151&h2)+(h1>>>0)).toString(36);
+}
+function teacherUnlocked(){ try{ return sessionStorage.getItem("mm-teacher")===TEACHER_KEY_HASH; }catch(e){ return !!window.__mmTeacher; } }
+function setTeacherUnlocked(on){ try{ on ? sessionStorage.setItem("mm-teacher",TEACHER_KEY_HASH) : sessionStorage.removeItem("mm-teacher"); }catch(e){} window.__mmTeacher = on; }
+function renderTeacherGate(){
+  if(teacherUnlocked()) return renderTeacher();
+  if(S) renderVitals();
+  app.innerHTML = `
+  <section class="panel" style="--m:var(--violet);max-width:520px">
+    <div class="banner fill"><h2>🔒 Teacher answer key</h2></div>
+    <div class="pbody">
+      <p>This page shows every answer, so it's for teachers only. Please type the teacher password.</p>
+      <label class="pw"><span>Password</span><input type="password" id="pw" autocomplete="current-password"></label>
+      <p id="pwMsg" class="pw-msg" aria-live="polite"></p>
+      <div class="q-actions">
+        <button class="primary" type="button" id="pwGo">Unlock</button>
+        <button class="secondary" type="button" id="pwBack">Back</button>
+      </div>
+    </div>
+  </section>`;
+  const inp=document.getElementById("pw"); inp.focus();
+  const tryIt=()=>{
+    if(khash(inp.value)===TEACHER_KEY_HASH){ setTeacherUnlocked(true); renderTeacher(); }
+    else { const m=document.getElementById("pwMsg"); m.textContent="That password isn't right. Try again."; inp.value=""; inp.focus();
+      const c=document.querySelector(".panel"); if(!REDUCED){ c.classList.remove("shake"); void c.offsetWidth; c.classList.add("shake"); } }
+  };
+  document.getElementById("pwGo").onclick=tryIt;
+  inp.onkeydown=e=>{ if(e.key==="Enter") tryIt(); };
+  document.getElementById("pwBack").onclick = S ? (S.scn ? renderMap : renderCases) : renderStart;
+  window.scrollTo(0,0);
+}
+
+function renderTeacher(){
+  if(!teacherUnlocked()) return renderTeacherGate();
+  if(S) renderVitals();
+  const types={mc:"Multiple choice",multi:"Pick two",order:"Put in order"};
+  let n=0;
+  app.innerHTML = `
+  <section class="teacher">
+    <div class="no-print q-actions" style="justify-content:space-between">
+      <button class="secondary" type="button" id="tBack">← Back</button>
+      <span><button class="secondary" type="button" id="tLock">🔒 Lock</button> <button class="secondary" type="button" id="tVocab">🔤 Vocabulary sheet</button> <button class="primary" type="button" id="tPrint">🖨️ Print or save as PDF</button></span>
+    </div>
+    <p class="no-print" style="color:var(--muted)">If the print button doesn't open, press Ctrl+P (Windows/Chromebook) or Cmd+P (Mac). Choose "Save as PDF" to keep a copy.</p>
+    <h2>Micro Medics: Teacher Answer Key & Alignment</h2>
+    <p>Georgia Standards of Excellence, Grade 7: <b>S7L2.a</b> cell structures, <b>S7L2.b</b> levels of organization, <b>S7L2.c</b> body systems interacting (Cardiovascular, Excretory, Digestive, Respiratory, Muscular, Nervous, Immune). Aligned to Gwinnett County 7th Grade Science AKS. ${SCENARIOS.reduce((a,sc)=>a+coverage(sc).n,0)} questions in ${SCENARIOS.length} patient cases.</p>
+    <h3>Coverage chart</h3>
+    ${coverageHTML()}
+    <h3>Case summaries</h3>
+    <ul>${SCENARIOS.map(sc=>`<li><b>${esc(sc.title)}</b>: ${esc(sc.blurb)} (${sc.missions.map(m=>esc(m.title)).join(", ")})</li>`).join("")}</ul>
+    ${SCENARIOS.map(sc=>`
+      <h3 class="ak-case">${sc.emoji} ${esc(sc.title)}</h3>
+      ${sc.missions.map(m=>`
+        <h4>${esc(m.title)} <span class="ak-brief">(study briefing: ${esc(MISSIONS.find(x=>x.id===m.study).title)})</span></h4>
+        <div style="overflow-x:auto"><table class="ctable ak">
+          <thead><tr><th>#</th><th>Question</th><th>Answer</th><th>Std.</th><th>Systems</th><th>Checked against</th></tr></thead>
+          <tbody>${m.qs.map(q=>{n++; return `<tr><td>${n}</td><td>${esc(q.q)}<div class="ak-type">${types[q.t]}</div></td><td>${answerText(q)}</td><td>S7L2.${q.std}</td><td>${(q.sys||[]).map(k=>SYS[k]).join(", ")||"—"}</td><td class="ak-src">${(q.s||[]).map(k=>esc(SRC[k].n)).join("; ")}</td></tr>`;}).join("")}</tbody>
+        </table></div>`).join("")}`).join("")}
+    <h3>Student learn-more links</h3>
+    <ul>${Object.keys(LINKS).map(k=>{const L=LINKS[k]; return `<li><b>${esc(L.t)}</b> (${esc(L.site)}, ${esc(L.lvl)}): ${esc(L.u)}${L.es?` · Spanish: ${esc(L.es)}`:""}</li>`;}).join("")}</ul>
+    <details class="no-print pw-change"><summary>🔑 Change the teacher password</summary>
+      <p>Type a new password to get one line of code to paste into index.html. The password itself is never stored in the page.</p>
+      <label class="pw"><span>New password</span><input type="text" id="pwNew" autocomplete="off"></label>
+      <button class="secondary" type="button" id="pwMake">Make my code line</button>
+      <p id="pwOut" class="srcline"></p>
+    </details>
+    <h3>Notes for teachers</h3>
+    <ul>
+      <li>Scores and the medical report count first tries only. Students can retry any missed question after reading short notes drawn from the study briefings.</li>
+      <li>Progress saves automatically on the student's device and browser. A different device, or clearing browser data, starts fresh. On shared devices, the start screen asks "Are you [name]?" before continuing.</li>
+      <li>To collect results, have students open the Medical report and tap "Copy my results for my teacher," then paste into a Google Form, D2L/Canvas assignment, or email. The summary lists zones finished and first-try accuracy by standard and by body system.</li>
+      <li>Lightning Round: a 90-second timed review drawing multiple-choice and pick-two questions from all four cases. In team mode each team plays its own round and scores are compared. Missed questions are reviewed at the end. Lightning scores add to team points but do not change first-try accuracy.</li>
+      <li>A printable Vocabulary Sheet (all study terms, the levels of organization, the 7 systems, and Claim-Evidence-Reasoning) is on the patient screen.</li>
+      <li>KidsHealth's brain article mentions the "left brain / right brain" idea as something scientists "think"; it's an oversimplification worth a quick class discussion. The urinary system article uses anatomical terms and includes a hygiene tip.</li>
+      <li>Only the seven systems named in S7L2.c are used as answers. Per GaDOE's FAQ, the skeletal system is not assessed under S7L2.c.</li>
+      <li>The answer key is password-protected so students can't open it from the game. This is a deterrent, not true security: the answers are inside the game file, so a determined student could find them with browser developer tools.</li>
+      <li>Standards, AKS, and links last checked September 2026.</li>
+    </ul>
+  </section>`;
+  document.getElementById("tBack").onclick = S ? (S.scn ? renderMap : renderCases) : renderStart;
+  document.getElementById("tVocab").onclick = renderVocab;
+  document.getElementById("tLock").onclick = ()=>{ setTeacherUnlocked(false); (S ? (S.scn ? renderMap : renderCases) : renderStart)(); };
+  document.getElementById("pwMake").onclick = ()=>{
+    const v=document.getElementById("pwNew").value; const out=document.getElementById("pwOut");
+    if(v.length<6){ out.textContent="Use at least 6 characters."; return; }
+    out.innerHTML=`Open index.html, find the line that starts with <code>const TEACHER_KEY_HASH</code>, and replace it with:<br><code class="pw-line">const TEACHER_KEY_HASH = "${khash(v)}";</code><br>Then upload the new index.html to GitHub.`;
+  };
+  document.getElementById("tPrint").onclick = ()=>{ try{ window.print(); }catch(e){} };
+  window.scrollTo(0,0);
+}
+const dlg = document.getElementById("stdDialog");
+function openStd(){ renderCoverage(); if(dlg.showModal) dlg.showModal(); else dlg.setAttribute("open",""); }
+document.getElementById("stdBtn").onclick = openStd;
+document.getElementById("closeBrief").onclick = ()=>{ const d=document.getElementById("briefDlg"); d.close ? d.close() : d.removeAttribute("open"); };
+document.getElementById("closeStd").onclick = ()=>dlg.close ? dlg.close() : dlg.removeAttribute("open");
+
+renderStart();
+
+</script>
+</body>
+</html>
